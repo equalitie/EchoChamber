@@ -3,18 +3,18 @@
 In order to clearly understand the terms used throughout the rest of this document as well
 as other EchoChamber documentation, refer to the following set of definitions for terminology.
 
-> ### EchoChamber
->
+### EchoChamber
+
 > The entire phrase `EchoChamber` refers to this entire suite of software.
 
-> ### Chamber
->
+### Chamber
+
 > The `Chamber server`, or just `Chamber`, is the central server-software that handles
 > configurations, runs test code, simulates a network, and manages clients.
 > It presents a REST-like API for client communication as well as test configuration.
 
-> ### Echo
->
+### Echo
+
 > `Echo`, sometimes referred to as the `Echo API`, is the API presented to users of this
 > software for the purposes of configuring and running tests.  The phrase `Echo Library`
 > may also be used to refer to any library implementations to cover the Echo API.
