@@ -9,5 +9,8 @@ done
 
 echo ""
 echo "Installing dependencies."
+echo "github.com/gorilla/mux"
+go get github.com/gorilla/mux
+echo ""
 
 go build $SOURCE_FILES && echo "Compiled successfully."
