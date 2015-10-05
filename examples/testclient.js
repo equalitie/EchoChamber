@@ -7,6 +7,11 @@ let concatStream = require('concat-stream');
 
 const SEND_URL = 'http://localhost:9004/send';
 
+/**
+ * Send a message to the Chamber server and log the response it sends us.
+ * @param {string} message - The message to send
+ * @param {string} id - The identifier of the client we want to send to
+ */
 function sendMessage(message, to) {
     request({
         url: SEND_URL,
@@ -31,6 +36,12 @@ function sendMessage(message, to) {
     });
 }
 
+/**
+ * Read all the data being POSTed to us and invoke a callback with any error that might
+ * occur or the streamed body contents.
+ * @param {http.IncomingMessage} req - The request received by our HTTP server, wrapping our "client"
+ * @param {function} callback - A function to invoke when we finish obtaining the body or have an error
+ */
 function handleBody(req, callback) {
   req.on('error', function (err) {
     callback(err, null);
@@ -41,6 +52,10 @@ function handleBody(req, callback) {
   req.pipe(concat);
 }
 
+/**
+ * Run an HTTP server that will listen for messages on the route /received.
+ * When a message is received, we can parse it and push it to our actual "client".
+ */
 let server = http.createServer((req, res) => {
     if (url.parse(req.url).path === '/received') {
         handleBody(req, (err, body) => {
@@ -65,5 +80,4 @@ server.listen(9005);
 console.log('Listening on port 9005');
 
 // Send a message to chamber to get the test started
-
 sendMessage('Hello, world!', 'myself');
