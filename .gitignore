@@ -26,3 +26,5 @@ _testmain.go
 # Compiled binary
 chamber
 
+# Node.js related stuff in the examples
+examples/node_modules/
