@@ -1,4 +1,5 @@
 import json
+import thread
 from flask import Flask, request
 import requests as req
 
@@ -23,7 +24,8 @@ def received():
 def unknown():
     return 'What?'
 
-# Send a message to chamber to get the test started
-send_message('Hello, world!', 'myself')
-app.run(port=9005)
 
+# Send a message to chamber to get the test started
+thread.start_new_thread(send_message, ('Hello, world!', 'myself'))
+
+app.run(port=9005)
