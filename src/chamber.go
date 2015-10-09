@@ -51,6 +51,7 @@ func sendMessage(w http.ResponseWriter, r *http.Request) {
 	decodeErr := decoder.Decode(&sendMsgReq)
 	if decodeErr != nil {
 		fmt.Println("Could not parse message")
+		fmt.Println(decodeErr)
 		w.Write([]byte("{\"success\": false, \"queueIndex\": -1}"))
 	} else {
 		fmt.Println(sendMsgReq)
