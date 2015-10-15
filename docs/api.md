@@ -8,8 +8,7 @@ when messages arrive and also that will communicate a client's desire to send a 
 to the Chamber server.
 
 Fortunately, the interface between the Chamber server and your client implementation
-is extremely simple, which could mean it is possible for your client to exist behind a
-single HTTP request handler.
+is extremely simple.
 
 ## Start a new client
 
@@ -21,6 +20,8 @@ Method | Route   | Parameters
 -------|---------|------------
 POST   | /client | `{"id": string}`
 
+The `id` field here is the unique identifier assigned to the new client.
+
 ### Client
 
 Clients will have to be prepared to receive a message about their having joined a session
@@ -28,6 +29,9 @@ Clients will have to be prepared to receive a message about their having joined 
 Method | Route   | Parameters
 -------|---------|------------
 POST   | /joined | `{"id": string, "participants": [string]}`
+
+The `id` field here is the unique string identifier assigned to the client.
+The `participants` field is an array of the identifiers of clients already in the simulation.
 
 ## Disconnect a client
 
@@ -38,6 +42,8 @@ The endpoint for having Chamber signal a client to disconnect is:
 Method | Route   | Parameters
 -------|---------|------------
 DELETE | /client | `{"id": string}`
+
+The `id` field is the unique identifier of the client to disconnect.
 
 ### Client
 
@@ -58,8 +64,9 @@ Method | Route       | Parameters
 -------|-------------|------------
 POST   | /prompt     | `{"from": string, "to": string, "message": string}`
 
-**NOTE** that Chamber will match the "from" field's value and the "to" field's value
-so that multiple clients can be prompted to send or be targeted as receivers if desired.
+The `from` field is a regular expression that must match one or more client's identifiers.
+The `to` field is a regular expression that must match one or more client's identifiers.
+The `message` field is the content of the message to send to the recipients.
 
 ### Client
 
@@ -67,19 +74,35 @@ In order to receive the prompt, clients should be prepared for messages on the f
 
 Method | Route       | Parameters
 -------|-------------|------------
-POST   | /prompt     | `{"from": string, "to": string, "message": string}`
+POST   | /prompt     | `{"to": string, "message": string}`
 
-This is exactly the same as the Chamber endpoint.
+The `to` field is a regular expression that matches the the identifiers of recipient clients.
+The `message` field is the content of the message to send to the recipients.
+
+## Sending messages
+
+### Chamber
 
 In order for a client to send a message to Chamber to be sent to another client, it can use
 the following endpoint:
 
 Method | Route       | Parameters
 -------|-------------|------------
-POST   | /send       | `{"from": string, "to": string, "message": string}`
+POST   | /send       | `{"to": string, "message": string}`
 
-**NOTE** that Chamber will match the "from" field's value and the "to" field's value
-so that multiple clients can be prompted to send or be targeted as receivers if desired.
+The `to` field is a regular expression that matches the the identifiers of recipient clients.
+The `message` field is the content of the message to send to the recipients.
 
-The reason for a separate route to be used here is to prevent infinite prompting from occurring,
-and also to make it easier for clients to send messages unprompted.
+### Client
+
+In order to be notified when a message has arrived for the client, it must provide the following
+endpoint:
+
+Method | Route       | Parameters
+-------|-------------|------------
+POST   | /received   | `{"from": string, "message": string, "date": string}`
+
+The `from` field is the identifier of the client that sent the message.
+The `message` field is the content of the message sent.
+The `date` field is a Unix-date-formatted timestamp of when the message was sent.
+For example, `"Tue Nov 10 23:00:00 UTC 2009"`.
