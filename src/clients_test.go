@@ -4,13 +4,25 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
+	"time"
 )
 
+/**
+ * Parse the port number from a URL.
+ * @param URL - A URL of the form http://<address>:<port>/<path>
+ * @return the port number as a string, e.g. "8080"
+ */
+func getPort(URL string) string {
+	parsed, _ := url.Parse(URL)
+	parts := strings.Split(parsed.Host, ":")
+	return parts[1]
+}
+
 func TestNotifyJoined(t *testing.T) {
-	testClient := NewClient("", "testing1", "9010")
-	testServer := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasSuffix(r.URL.String(), "/joined") {
 			t.Error("Got request for an endpoint other than /joined")
 			w.Write([]byte("Got request for an endpoint other than /joined"))
@@ -36,18 +48,17 @@ func TestNotifyJoined(t *testing.T) {
 			w.Write([]byte("Success!"))
 		}
 	}))
-	testServer.URL = "http://localhost:9010"
-	testServer.Start()
+	testClient := NewClient("", "testing1", getPort(testServer.URL))
 	defer testServer.Close()
-	_, err := testClient.NotifyJoined([...]string{"participant1", "participant2"})
+	participants := [...]string{"participant1", "participant2"}
+	_, err := testClient.NotifyJoined(participants[:])
 	if err != nil {
 		t.Error(err.Error())
 	}
 }
 
 func TestDisconnect(t *testing.T) {
-	testClient := NewClient("", "testing2", "9010")
-	testServer := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasSuffix(r.URL.String(), "/disconnect") {
 			t.Error("Got request for an endpoint other than /disconnect")
 			w.Write([]byte("Got request for an endpoint other than /disconnect"))
@@ -60,8 +71,7 @@ func TestDisconnect(t *testing.T) {
 		}
 		w.Write([]byte("Success!"))
 	}))
-	testServer.URL = "http://localhost:9010"
-	testServer.Start()
+	testClient := NewClient("", "testing2", getPort(testServer.URL))
 	defer testServer.Close()
 	_, err := testClient.Disconnect()
 	if err != nil {
@@ -70,8 +80,7 @@ func TestDisconnect(t *testing.T) {
 }
 
 func TestPromptSend(t *testing.T) {
-	testClient := NewClient("", "testing3", "9010")
-	testServer := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasSuffix(r.URL.String(), "/prompt") {
 			t.Error("Got request for an endpoint other than /prompt. Got " + r.URL.String())
 			w.Write([]byte("Got request for an endpoint other than /prompt. Got " + r.URL.String()))
@@ -103,8 +112,7 @@ func TestPromptSend(t *testing.T) {
 			w.Write([]byte("Success!"))
 		}
 	}))
-	testServer.URL = "http://localhost:9010"
-	testServer.Start()
+	testClient := NewClient("", "testing3", getPort(testServer.URL))
 	defer testServer.Close()
 	_, err := testClient.PromptSend("testServer", "Hello world!")
 	if err != nil {
@@ -113,8 +121,7 @@ func TestPromptSend(t *testing.T) {
 }
 
 func TestNotifyReceived(t *testing.T) {
-	testClient := NewClient("", "testing4", "9010")
-	testServer := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasSuffix(r.URL.String(), "/received") {
 			t.Error("Got request for an endpoint other than /received. Got " + r.URL.String())
 			w.Write([]byte("Got request for an endpoint other than /received. Got " + r.URL.String()))
@@ -125,7 +132,7 @@ func TestNotifyReceived(t *testing.T) {
 			w.Write([]byte("Request to /received is not a POST request. Got " + r.Method))
 			return
 		}
-		sendMsg := ReceievedMessage{}
+		sendMsg := ReceivedMessage{}
 		decoder := json.NewDecoder(r.Body)
 		decodeErr := decoder.Decode(&sendMsg)
 		if decodeErr != nil {
@@ -143,10 +150,9 @@ func TestNotifyReceived(t *testing.T) {
 			w.Write([]byte("Success!"))
 		}
 	}))
-	testServer.URL = "http://localhost:9010"
-	testServer.Start()
+	testClient := NewClient("", "testing4", getPort(testServer.URL))
 	defer testServer.Close()
-	_, err := testClient.NotifyReceived("testServer", "Helo world!", time.Now().Format(time.UnixDate))
+	_, err := testClient.NotifyReceived("testServer", "Hello world!", time.Now().Format(time.UnixDate))
 	if err != nil {
 		t.Error(err.Error())
 	}
