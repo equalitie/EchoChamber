@@ -5,6 +5,7 @@ import (
     "net/http"
     "os/exec"
     "bytes"
+    "time"
 )
 
 /**
@@ -14,7 +15,7 @@ type Client struct {
     PortNumber string
     Identifier string
     executable string
-    command    *os.Cmd
+    command    *exec.Cmd
 }
 
 /**
@@ -84,7 +85,7 @@ func (c *Client)Disconnect() (*http.Response, error) {
  * @return the response from the client and any error that occurs
  */
 func (c *Client)PromptSend(to, message string) (*http.Response, error) {
-    data, err1 := json.Marshal(PromptMessage{to, message})
+    data, err1 := json.Marshal(PromptMessage{c.Identifier, to, message})
     if err1 != nil {
         return nil, err1
     }
@@ -103,11 +104,11 @@ func (c *Client)PromptSend(to, message string) (*http.Response, error) {
  * Send POST /received to inform the client that it has received a message.
  * @param from - The identifier of the client that sent the message
  * @param message - The content of the message received
+ * @param when - The timestamp of when Chamber got the message from the sender
  * @return the response from the client and any error that occurs
  */
-func (c *Client)Send(from, message string) (*http.Response, error) {
-    now = time.Now().Format(time.UnixDate)
-    data, err1 := json.Marshal(ReceivedMessage{from, message, now})
+func (c *Client)NotifyReceived(from, message string, when string) (*http.Response, error) {
+    data, err1 := json.Marshal(ReceivedMessage{from, message, when})
     if err1 != nil {
         return nil, err1
     }

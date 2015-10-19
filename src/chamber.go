@@ -9,31 +9,6 @@ import (
 )
 
 /**
- * Holds a decoded request for a message to be sent to another client
- */
-type SendMessageRequest struct {
-	Message   string `json: "message"`
-	Recipient string `json: "to"`
-}
-
-/**
- * A direct analogue of SendMessageRequest, but with a slightly different
- * "from" field. Meant to be sent to recipient clients.
- */
-type ReceivedMessage struct {
-	Message string `json: "message"`
-	From    string `json: "from"`
-}
-
-/**
- * Holds a response to a send-message request
- */
-type SendMessageResponse struct {
-	Success    bool `json: "success"`
-	QueueIndex int  `json: "queueIndex"`
-}
-
-/**
  * Temporary placeholder
  */
 func helloWorld(w http.ResponseWriter, r *http.Request) {
@@ -49,42 +24,16 @@ func sendMessage(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	sendMsgReq := SendMessageRequest{}
 	decodeErr := decoder.Decode(&sendMsgReq)
+    w.Header.Set("Content-Type", "application/json")
 	if decodeErr != nil {
 		fmt.Println("Could not parse message")
 		fmt.Println(decodeErr)
 		w.Write([]byte("{\"success\": false, \"queueIndex\": -1}"))
 	} else {
 		fmt.Println(sendMsgReq)
+        // TODO - Actually make a message queue
 		w.Write([]byte("{\"success\": true, \"queueIndex\": 0}"))
 	}
-	// TODO - Delete this!
-	// Act like an echo server and send back whatever we received
-	sendErr := notifyReceived(sendMsgReq)
-	if sendErr != nil {
-		fmt.Println("Echoed message")
-	} else {
-		fmt.Println("Could not echo")
-		fmt.Println(sendErr)
-	}
-}
-
-/**
- * Notify a client that a message has been received for it.
- * @param smr - The message requested to be sent
- * @return an error if one occurs
- */
-func notifyReceived(smr SendMessageRequest) error {
-	data, _ := json.Marshal(ReceivedMessage{smr.Message, "abc123"}) // Fake sender ID
-	reader := bytes.NewReader(data)
-	// TODO - Keep a table of participating clients to find the appropriate send URL
-	req, err := http.NewRequest("POST", "http://localhost:9005/received", reader)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{}
-	_, err2 := client.Do(req)
-	return err2
 }
 
 func main() {

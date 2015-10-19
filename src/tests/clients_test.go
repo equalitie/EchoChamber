@@ -112,17 +112,17 @@ func TestPromptSend(t *testing.T) {
     }
 }
 
-func TestSend(t *testing.T) {
+func TestNotifyReceived(t *testing.T) {
     testClient := NewClient("", "testing4", "9010")
     testServer := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        if !strings.HasSuffix(r.URL.String(), "/send") {
-            t.Error("Got request for an endpoint other than /send. Got " + r.URL.String())
-            w.Write([]byte("Got request for an endpoint other than /send. Got " + r.URL.String()))
+        if !strings.HasSuffix(r.URL.String(), "/received") {
+            t.Error("Got request for an endpoint other than /received. Got " + r.URL.String())
+            w.Write([]byte("Got request for an endpoint other than /received. Got " + r.URL.String()))
             return
         }
         if r.Method != "POST" {
-            t.Error("Request to /send is not a POST request. Got " + r.Method)
-            w.Write([]byte("Request to /send is not a POST request. Got " + r.Method))
+            .Error("Request to /received is not a POST request. Got " + r.Method)
+            w.Write([]byte("Request to /received is not a POST request. Got " + r.Method))
             return
         }
         sendMsg := ReceievedMessage{}
@@ -146,7 +146,7 @@ func TestSend(t *testing.T) {
     testServer.URL = "http://localhost:9010"
     testServer.Start()
     defer testServer.Close()
-    _, err := testClient.Send("testServer", "Helo world!")
+    _, err := testClient.NotifyReceived("testServer", "Helo world!", time.Now().Format(time.UnixDate))
     if err != nil {
         t.Error(err.Error())
     }
