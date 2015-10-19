@@ -1,19 +1,12 @@
 package main
 
 import (
+	"./routes"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 )
-
-/**
- * Temporary placeholder
- */
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte("Hello world!"))
-}
 
 /**
  * Handle a request to have a message sent to another client.
@@ -37,10 +30,11 @@ func sendMessage(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc("/", helloWorld)
-	router.HandleFunc("/send", sendMessage).Methods("POST")
+	router.HandleFunc("/", routes.HelloWorld)
+	clientsRouter := router.PathPrefix("/client").Subrouter()
+	routes.InitClientHandlers(clientsRouter) // , &clientList)
 	http.Handle("/", router)
 	// TODO - Make this configurable
-	http.ListenAndServe(":9004", nil)
 	fmt.Println("Listening on localhost:9004")
+	http.ListenAndServe(":9004", nil)
 }
