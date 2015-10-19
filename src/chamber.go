@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -24,14 +23,14 @@ func sendMessage(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	sendMsgReq := SendMessageRequest{}
 	decodeErr := decoder.Decode(&sendMsgReq)
-    w.Header.Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	if decodeErr != nil {
 		fmt.Println("Could not parse message")
 		fmt.Println(decodeErr)
 		w.Write([]byte("{\"success\": false, \"queueIndex\": -1}"))
 	} else {
 		fmt.Println(sendMsgReq)
-        // TODO - Actually make a message queue
+		// TODO - Actually make a message queue
 		w.Write([]byte("{\"success\": true, \"queueIndex\": 0}"))
 	}
 }

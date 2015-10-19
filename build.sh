@@ -8,9 +8,6 @@ echo "Formatting go files."
 for file in `ls src/*.go`; do
   go fmt $file;
 done
-for file in `ls src/tests/*.go`; do
-  go fmt $file;
-done
 
 echo ""
 echo "Installing dependencies."
