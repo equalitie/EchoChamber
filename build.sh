@@ -1,8 +1,6 @@
 #! /usr/bin/env sh
 
-SOURCE_FILES="src/chamber.go \
-    src/clients.go \
-    src/messagetypes.go"
+SOURCE_FILES="src/chamber.go"
 
 echo "Formatting go files."
 for file in `ls src/*.go`; do
@@ -18,7 +16,9 @@ echo ""
 cd src/
 echo "Running tests."
 go test
-cd ../
+cd clients/
+go test
+cd ../../
 
 echo ""
 go build $SOURCE_FILES && echo "Compiled successfully."

@@ -1,4 +1,4 @@
-package main
+package clients
 
 /**
  * The contents of a message sent to inform a client it has joined the simulation.
