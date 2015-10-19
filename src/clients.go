@@ -68,7 +68,7 @@ func (c *Client)NotifyJoined(participants []string) (*http.Response, error) {
  * @return the response from the client and any error that occurs
  */
 func (c *Client)Disconnect() (*http.Response, error) {
-    request, err1 := http.NewRequest("POST", disconnecUrl(c.PortNumber), nil)
+    request, err1 := http.NewRequest("POST", disconnectUrl(c.PortNumber), nil)
     if err1 != nil {
         return nil, err1
     }
@@ -142,7 +142,7 @@ func disconnectUrl(port string) string {
  * The route on which a client expects to be prompted to send a message
  * @param port - The port number the client's HTTP server listens on
  */
-func disconnectUrl(port string) string {
+func promptUrl(port string) string {
     return "http://localhost:" + port + "/prompt"
 }
 
@@ -150,6 +150,6 @@ func disconnectUrl(port string) string {
  * The route on which a client expects to be informed that it has received a message
  * @param port - The port number the client's HTTP server listens on
  */
-func disconnectUrl(port string) string {
+func receivedUrl(port string) string {
     return "http://localhost:" + port + "/received"
 }
