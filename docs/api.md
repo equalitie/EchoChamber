@@ -22,18 +22,17 @@ running test, configuring the network settings, and handling clients.
         <th>Actions</th>
     </tr>
     <tr>
-        <td><a href="#">Clients</a></td>
+        <td><a href="https://github.com/equalitie/EchoChamber/blob/master/docs/chamber.md#clients">Clients</a></td>
         <td>
             <ul>
-                <li><a href="#">Create</a></li>
-                <li><a href="#">Notify of join</a></li>
-                <li><a href="#">Notify of receipt</a></li>
+                <li><a href="https://github.com/equalitie/EchoChamber/blob/master/docs/chamber.md#create">create</a></li>
             </ul>
         </td>
         <td>
             <ul>
-                <li><a href="#">Disconnect</a></li>
-                <li><a href="#">Prompt to send</a></li>
+                <li><a href="https://github.com/equalitie/EchoChamber/blob/master/docs/chamber.md#disconnect">disconnect</a></li>
+                <li><a href="https://github.com/equalitie/EchoChamber/blob/master/docs/chamber.md#prompt">prompt</a></li>
+                <li><a href="https://github.com/equalitie/EchoChamber/blob/master/docs/chamber.md#send">send</a></li>
             </ul>
         </td>
     </tr>
