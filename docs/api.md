@@ -10,99 +10,87 @@ to the Chamber server.
 Fortunately, the interface between the Chamber server and your client implementation
 is extremely simple.
 
-## Start a new client
+## Chamber API Endpoints
 
-### Chamber
+The following table presents all of the endpoints chamber provides for configuring the
+running test, configuring the network settings, and handling clients.
 
-The enpoint for having Chamber start a new client is as follows:
+<table>
+    <tr>
+        <th>Entity</th>
+        <th>General</th>
+        <th>Actions</th>
+    </tr>
+    <tr>
+        <td><a href="#">Clients</a></td>
+        <td>
+            <ul>
+                <li><a href="#">Create</a></li>
+                <li><a href="#">Notify of join</a></li>
+                <li><a href="#">Notify of receipt</a></li>
+            </ul>
+        </td>
+        <td>
+            <ul>
+                <li><a href="#">Disconnect</a></li>
+                <li><a href="#">Prompt to send</a></li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td><a href="#">Config</a></td>
+        <td>
+            <ul>
+            </ul>
+        </td>
+        <td>
+            <ul>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <td><a href="#">Network</a></td>
+        <td>
+            <ul>
+            </ul>
+        </td>
+        <td>
+            <ul>
+            </ul>
+        </td>
+    </tr>
+</table>
 
-Method | Route   | Parameters
--------|---------|------------
-POST   | /client | `{"id": string}`
+## Client API Endpoints
 
-The `id` field here is the unique identifier assigned to the new client.
+The following table presents all of the endopints a client must provide in order to be
+controlled properly by Chamber.
 
-### Client
+Method | Route       | Parameters                                            | Description
+-------|-------------|-------------------------------------------------------|------------
+POST   | /joined     | `{"id": string, "participants": [string]}`            | Notify the client that it has joined the test session and been assigned an ID
+POST   | /received   | `{"from": string, "message": string, "date": string}` | Notify the client that it has been sent a message
+POST   | /prompt     | `{"to": string, "message": string}`                   | Prompt the client to send a message to another client
+POST   | /disconnect | N/A                                                   | Notify the client that it has been disconnected from the test session
 
-Clients will have to be prepared to receive a message about their having joined a session
+### Client Joined
 
-Method | Route   | Parameters
--------|---------|------------
-POST   | /joined | `{"id": string, "participants": [string]}`
+Parameter    | Examples         | Description
+-------------|------------------|-------------
+id           | idab01, client-1 | The identifier assigned to the client by the tester
+participants | [idab02, friend] | A list of identifiers of participant clients in the test session
 
-The `id` field here is the unique string identifier assigned to the client.
-The `participants` field is an array of the identifiers of clients already in the simulation.
+### Client Receipt
 
-## Disconnect a client
+Parameter    | Examples                       | Description
+-------------|--------------------------------|-------------
+from         | idab00, client-2               | The identifier of the client from whom the message was received
+message      | "Hey there!"                   | The content of the message sent
+date         | "Tue Nov 10 23:00:00 UTC 2009" | A unix-date formatted datestring set when chamber got the message
 
-### Chamber
+### Client Prompt
 
-The endpoint for having Chamber signal a client to disconnect is:
-
-Method | Route   | Parameters
--------|---------|------------
-DELETE | /client | `{"id": string}`
-
-The `id` field is the unique identifier of the client to disconnect.
-
-### Client
-
-Clients will have to be prepared to receive a message so they can gracefully quit
-
-Method | Route       | Parameters
--------|-------------|------------
-POST   | /disconnect | N/A
-
-## Stimulate message send
-
-### Chamber
-
-To instruct Chamber to prompt a client to send a message other than what it may be
-programmed to send, the following endpoint is available:
-
-Method | Route       | Parameters
--------|-------------|------------
-POST   | /prompt     | `{"from": string, "to": string, "message": string}`
-
-The `from` field is a regular expression that must match one or more client's identifiers.
-The `to` field is a regular expression that must match one or more client's identifiers.
-The `message` field is the content of the message to send to the recipients.
-
-### Client
-
-In order to receive the prompt, clients should be prepared for messages on the following route:
-
-Method | Route       | Parameters
--------|-------------|------------
-POST   | /prompt     | `{"to": string, "message": string}`
-
-The `to` field is a regular expression that matches the the identifiers of recipient clients.
-The `message` field is the content of the message to send to the recipients.
-
-## Sending messages
-
-### Chamber
-
-In order for a client to send a message to Chamber to be sent to another client, it can use
-the following endpoint:
-
-Method | Route       | Parameters
--------|-------------|------------
-POST   | /send       | `{"to": string, "message": string}`
-
-The `to` field is a regular expression that matches the the identifiers of recipient clients.
-The `message` field is the content of the message to send to the recipients.
-
-### Client
-
-In order to be notified when a message has arrived for the client, it must provide the following
-endpoint:
-
-Method | Route       | Parameters
--------|-------------|------------
-POST   | /received   | `{"from": string, "message": string, "date": string}`
-
-The `from` field is the identifier of the client that sent the message.
-The `message` field is the content of the message sent.
-The `date` field is a Unix-date-formatted timestamp of when the message was sent.
-For example, `"Tue Nov 10 23:00:00 UTC 2009"`.
+Parameter | Examples            | Description
+----------|---------------------|-------------
+to        | friend0, id01       | The identifier of the client that the prompted client should send to
+message   | "Nice to meet you." | The message that the prompted client should send
