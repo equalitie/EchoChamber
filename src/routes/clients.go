@@ -1,11 +1,15 @@
 package routes
 
 import (
+    "../clients"
     "net/http"
     "fmt"
 )
 
-func CreateClient(w http.ResponseWriter, r *http.Request) {
-    fmt.Println("Got a request to create a new client")
-    w.Write([]byte("Hello world!"))
+func CreateClient(cl *clients.ClientList) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        fmt.Println("Got a request to create a new client")
+        cl.Add(clients.NewClient("", "testing1", "9010"))
+        w.Write([]byte("Created client!"))
+    }
 }

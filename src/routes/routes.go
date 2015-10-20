@@ -1,8 +1,10 @@
 package routes
 
 import (
+    "../clients"
     "net/http"
     "github.com/gorilla/mux"
+    "fmt"
 )
 
 /**
@@ -13,6 +15,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte("Hello world!"))
 }
 
-func InitClientHandlers(router *mux.Router) {
-    router.HandleFunc("/", CreateClient)
+func InitClientHandlers(router *mux.Router, cl *clients.ClientList) {
+    fmt.Println("Calling InitClientHandlers")
+    router.HandleFunc("/", CreateClient(cl))
 }
