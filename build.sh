@@ -18,6 +18,8 @@ echo "Running tests."
 go test
 cd clients/
 go test
+cd ../routes
+go test
 cd ../../
 
 echo ""

@@ -1,7 +1,7 @@
 package clients
 
 import (
-
+    "fmt"
 )
 
 /**
@@ -13,13 +13,23 @@ type ClientList struct {
 }
 
 /**
+ * Create a new client list with no clients in it.
+ */
+func NewClientList() ClientList {
+    clients := make([]Client, 0)
+    return ClientList{0, clients}
+}
+
+/**
  * Find a client with a given id.
  * @param identifier - The identifier of the client to retrieve
  * @return a pointer to the client if found else nil
  */
 func (c *ClientList)Get(identifier string) *Client {
-    for var i uint32 = 0; i < c.Length; i++ {
+    var i uint32
+    for i = 0; i < c.Length; i++ {
         if c.Clients[i].Identifier == identifier {
+            fmt.Printf("Found %s at index %d\n", identifier, i)
             return &(c.Clients[i])
         }
     }
@@ -40,9 +50,10 @@ func (c *ClientList)Add(client Client) {
  * @param identifier - The identifier of the client to remove
  * @return true if the client was found else false
  */
-func (c *Client)Remove(identifier string) bool {
+func (c *ClientList)Remove(identifier string) bool {
     var index int = -1
-    for var i uint32 = 0; i < int(c.Length); i++ {
+    var i uint32
+    for i = 0; i < c.Length; i++ {
         if c.Clients[i].Identifier == identifier {
             index = int(i)
         }
@@ -51,5 +62,6 @@ func (c *Client)Remove(identifier string) bool {
         return false
     }
     c.Clients = append(c.Clients[:index], c.Clients[index+1:]...)
+    c.Length--
     return true
 }
