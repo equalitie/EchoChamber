@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	clientList := clients.NewClientList("python", "examples/test.py")
+	clientList := clients.NewClientList()
 	router := mux.NewRouter()
 	router.HandleFunc("/", routes.HelloWorld)
 	clientsRouter := router.PathPrefix("/client").Subrouter()
