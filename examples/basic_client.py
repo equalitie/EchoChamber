@@ -10,6 +10,7 @@ participants = []
 success_true = json.dumps({'success': True})
 
 SEND_URL = 'http://localhost:9004/send'
+CHAMBER_PORT = '9004'
 
 def send_message(message, to):
     json_data = {'message': message, 'to': to}
@@ -17,6 +18,16 @@ def send_message(message, to):
     data = json.loads(response.text)
     print('Response to send request:\n\tSuccess: {0}\n\tQueue Index: {1}'.format(
         data['success'], data['queueIndex']))
+
+
+@app.route('/chamberport', methods=['POST'])
+def chamberport():
+    '''A special route to set the port chamber runs on. Useful for Go's httptest.'''
+    new_port = request.params['port']
+    SEND_URL = SEND_URL.replace(CHAMBER_PORT, new_port)
+    CHAMBER_PORT = new_port
+    print 'Will now send messages to ' + SEND_URL
+    return success_true
 
 
 @app.route('/joined', methods=['POST'])
