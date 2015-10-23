@@ -12,9 +12,9 @@ package routes
 
 import (
 	"../clients"
-	"fmt"
+	"encoding/json"
 	"net/http"
-    "encoding/json"
+	"time"
 )
 
 const COULD_NOT_FIND string = "Could not find any client with identifier "
@@ -25,30 +25,30 @@ const COULD_NOT_FIND string = "Could not find any client with identifier "
  */
 func CreateClient(cl *clients.ClientList) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-        SetJsonCT(&w)
-        ccp := CreateClientParam{}
-        decoder := json.NewDecoder(r.Body)
-        decodeErr := decoder.Decode(&ccp)
-        if decodeErr != nil {
-            WriteFailure(w, decodeErr.Error())
-        } else {
-            // TODO - Get the command and arguments from a configuration object
-            newClient := clients.NewClient("python", ccp.Identifier, cl.NextPort())
-            startErr := newClient.Start("examples/basic_client.py")
-            if startErr != nil {
-                WriteFailure(w, startErr.Error())
-                return
-            }
-            // TODO - Perhaps we should do something with the response
-            _, notifyErr := newClient.NotifyJoined(ccp.Participants)
-            if notifyErr != nil {
-                WriteFailure(w, notifyErr.Error())
-                return
-            }
-            marshalled, _ := json.Marshal(CreateClientResponse{true})
-            w.Write(marshalled)
-            cl.Add(newClient)
-        }
+		SetJsonCT(&w)
+		ccp := CreateClientParam{}
+		decoder := json.NewDecoder(r.Body)
+		decodeErr := decoder.Decode(&ccp)
+		if decodeErr != nil {
+			WriteFailure(w, decodeErr.Error())
+		} else {
+			// TODO - Get the command and arguments from a configuration object
+			newClient := clients.NewClient("python", ccp.Identifier, cl.NextPort())
+			startErr := newClient.Start("examples/basic_client.py")
+			if startErr != nil {
+				WriteFailure(w, startErr.Error())
+				return
+			}
+			// TODO - Perhaps we should do something with the response
+			_, notifyErr := newClient.NotifyJoined(ccp.Participants)
+			if notifyErr != nil {
+				WriteFailure(w, notifyErr.Error())
+				return
+			}
+			marshalled, _ := json.Marshal(CreateClientResp{true})
+			w.Write(marshalled)
+			cl.Add(newClient)
+		}
 	}
 }
 
@@ -58,29 +58,29 @@ func CreateClient(cl *clients.ClientList) http.HandlerFunc {
  */
 func DisconnectClient(cl *clients.ClientList) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-        SetJSONCT(&w)
-        dcp := DisconnectClientParam{}
-        decoder := json.NewDecoder(r.Body)
-        decoderErr := decoder.Decode(&dcp)
-        if decodeErr != nil {
-            WriteFailure(w, decodeErr.Error())
-        } else {
-            client := cl.Get(dcp.Identifier)
-            if client == nil {
-                WriteFailure(w, COULD_NOT_FIND + dcp.Identifier)
-                return
-            }
-            // TODO - We should really do something with these responses
-            _, disconErr := client.Disconnect()
-            if disconErr != nil {
-                WriteFailure(w, disconErr.Error())
-                return
-            }
-            marshalled, _ := json.Marshal(DisconnectClientResp{true})
-            w.Write(marshalled)
-            cl.Remove(dcp.Identifier)
-        }
-    }
+		SetJsonCT(&w)
+		dcp := DisconnectClientParam{}
+		decoder := json.NewDecoder(r.Body)
+		decodeErr := decoder.Decode(&dcp)
+		if decodeErr != nil {
+			WriteFailure(w, decodeErr.Error())
+		} else {
+			client := cl.Get(dcp.Identifier)
+			if client == nil {
+				WriteFailure(w, COULD_NOT_FIND+dcp.Identifier)
+				return
+			}
+			// TODO - We should really do something with these responses
+			_, disconErr := client.Disconnect()
+			if disconErr != nil {
+				WriteFailure(w, disconErr.Error())
+				return
+			}
+			marshalled, _ := json.Marshal(DisconnectClientResp{true})
+			w.Write(marshalled)
+			cl.Remove(dcp.Identifier)
+		}
+	}
 }
 
 /**
@@ -89,32 +89,32 @@ func DisconnectClient(cl *clients.ClientList) http.HandlerFunc {
  */
 func PromptClient(cl *clients.ClientList) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-        SetJSONCT(&w)
-        pcp := PromptClientParam{}
-        decoder := json.NewDecoder(r.Body)
-        decodeErr := decoder.Decode(&pcp)
-        if decodeErr != nil {
-            WriteFailure(w, decodeErr.Error())
-        } else {
-            client := cl.Get(pcp.From)
-            if client == nil {
-                WriteFailure(w, COULD_NOT_FIND + pcp.From)
-                return
-            }
-            if cl.Get(pcp.To) == nil {
-                WriteFailure(w, COULD_NOT_FIND + pcp.To)
-                return
-            }
-            // TODO - Handle response
-            _, promptErr := client.PromptSend(pcp.To, pcp.Message)
-            if promptErr != nil {
-                WriteFailure(w, promptErr.Error())
-                return
-            }
-            marshalled, _ := json.Marshal(PromptClientResp{true})
-            w.Write(marshalled)
-        }
-    }
+		SetJsonCT(&w)
+		pcp := PromptClientParam{}
+		decoder := json.NewDecoder(r.Body)
+		decodeErr := decoder.Decode(&pcp)
+		if decodeErr != nil {
+			WriteFailure(w, decodeErr.Error())
+		} else {
+			client := cl.Get(pcp.From)
+			if client == nil {
+				WriteFailure(w, COULD_NOT_FIND+pcp.From)
+				return
+			}
+			if cl.Get(pcp.To) == nil {
+				WriteFailure(w, COULD_NOT_FIND+pcp.To)
+				return
+			}
+			// TODO - Handle response
+			_, promptErr := client.PromptSend(pcp.To, pcp.Message)
+			if promptErr != nil {
+				WriteFailure(w, promptErr.Error())
+				return
+			}
+			marshalled, _ := json.Marshal(PromptClientResp{true})
+			w.Write(marshalled)
+		}
+	}
 }
 
 /**
@@ -123,29 +123,30 @@ func PromptClient(cl *clients.ClientList) http.HandlerFunc {
  */
 func SendToClient(cl *clients.ClientList) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-        SetJSONCT(&w)
-        scp := SendClientParam{}
-        decoder := json.NewDecoder(r.Body)
-        decodeErr := decoder.Decode(&scp)
-        if decodeErr != nil {
-            WriteFailure(w, decodeErr.Error())
-        } else {
-            client := cl.Get(scp.To)
-            if client == nil {
-                WriteFailure(w, COULD_NOT_FIND + scp.To)
-                return
-            }
-            if cl.Get(scp.From) == nil {
-                WriteFailure(w, COULD_NOT_FIND + scp.From)
-                return
-            }
-            _, sendErr := client.NotifyReceived(scp.From, scp.Message)
-            if sendErr != nil {
-                WriteFailure(w, sendErr.Error())
-                return
-            }
-            marshalled, _ := json.Marshal(SendClientResponse{true, 0, false})
-            w.Write(marshalled)
-        }
-    }
+		SetJsonCT(&w)
+		scp := SendClientParam{}
+		decoder := json.NewDecoder(r.Body)
+		decodeErr := decoder.Decode(&scp)
+		if decodeErr != nil {
+			WriteFailure(w, decodeErr.Error())
+		} else {
+			client := cl.Get(scp.To)
+			if client == nil {
+				WriteFailure(w, COULD_NOT_FIND+scp.To)
+				return
+			}
+			if cl.Get(scp.From) == nil {
+				WriteFailure(w, COULD_NOT_FIND+scp.From)
+				return
+			}
+			now := time.Now().Format(time.UnixDate)
+			_, sendErr := client.NotifyReceived(scp.From, scp.Message, now)
+			if sendErr != nil {
+				WriteFailure(w, sendErr.Error())
+				return
+			}
+			marshalled, _ := json.Marshal(SendClientResp{true, 0, false})
+			w.Write(marshalled)
+		}
+	}
 }

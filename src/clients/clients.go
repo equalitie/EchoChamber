@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"net/http"
 	"os/exec"
+	"strconv"
 )
 
 /**
  * Represents a client that interfaces with the protocol being tested.
  */
 type Client struct {
-	PortNumber string
+	PortNumber int
 	Identifier string
 	executable string
 	command    *exec.Cmd
@@ -24,7 +25,7 @@ type Client struct {
  * @param id - An unique string identifying the client, for internal use
  * @param port - The port number that the client HTTP server will be running on
  */
-func NewClient(command, id, port string) Client {
+func NewClient(command, id string, port int) Client {
 	return Client{port, id, command, nil}
 }
 
@@ -126,30 +127,30 @@ func (c *Client) NotifyReceived(from, message string, when string) (*http.Respon
  * The route on which a client expects to be notified it has joined a chat.
  * @param port - The port number the client's HTTP server listens on
  */
-func joinedUrl(port string) string {
-	return "http://localhost:" + port + "/joined"
+func joinedUrl(port int) string {
+	return "http://localhost:" + strconv.Itoa(port) + "/joined"
 }
 
 /**
  * The route on which a client expects to be told to disconnect.
  * @param port - The port number the client's HTTP server listens on
  */
-func disconnectUrl(port string) string {
-	return "http://localhost:" + port + "/disconnect"
+func disconnectUrl(port int) string {
+	return "http://localhost:" + strconv.Itoa(port) + "/disconnect"
 }
 
 /**
  * The route on which a client expects to be prompted to send a message
  * @param port - The port number the client's HTTP server listens on
  */
-func promptUrl(port string) string {
-	return "http://localhost:" + port + "/prompt"
+func promptUrl(port int) string {
+	return "http://localhost:" + strconv.Itoa(port) + "/prompt"
 }
 
 /**
  * The route on which a client expects to be informed that it has received a message
  * @param port - The port number the client's HTTP server listens on
  */
-func receivedUrl(port string) string {
-	return "http://localhost:" + port + "/received"
+func receivedUrl(port int) string {
+	return "http://localhost:" + strconv.Itoa(port) + "/received"
 }

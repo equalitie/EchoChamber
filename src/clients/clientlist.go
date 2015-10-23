@@ -10,7 +10,7 @@ import (
 type ClientList struct {
 	Length  uint32
 	Clients []Client
-    curPort int
+	CurPort int
 }
 
 /**
@@ -70,8 +70,8 @@ func (c *ClientList) Remove(identifier string) bool {
 /**
  * Generate the next port number to use for a client
  */
-func (cl *ClientList)NextPort() int {
-    port := cl.curPort
-    curPort++
-    return port
+func (cl *ClientList) NextPort() int {
+	port := cl.CurPort
+	cl.CurPort++
+	return port
 }

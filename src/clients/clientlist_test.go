@@ -7,7 +7,7 @@ import (
 func TestGet(t *testing.T) {
 	cl := NewClientList()
 	// Users of the ClientList type shouldn't append directly.
-	cl.Clients = append(cl.Clients, NewClient("", "testing1", "9010"))
+	cl.Clients = append(cl.Clients, NewClient("", "testing1", 9010))
 	cl.Length++
 	var client *Client = cl.Get("testing1")
 	if client == nil {
@@ -17,7 +17,7 @@ func TestGet(t *testing.T) {
 
 func TestAdd(t *testing.T) {
 	cl := NewClientList()
-	cl.Add(NewClient("", "testing2", "9010"))
+	cl.Add(NewClient("", "testing2", 9010))
 	if cl.Length != 1 {
 		t.Error("Client list's length was not incremented after adding new client.")
 	} else if cl.Clients[0].Identifier != "testing2" {
@@ -27,7 +27,7 @@ func TestAdd(t *testing.T) {
 
 func TestRemove(t *testing.T) {
 	cl := NewClientList()
-	cl.Clients = append(cl.Clients, NewClient("", "testing3", "9010"))
+	cl.Clients = append(cl.Clients, NewClient("", "testing3", 9010))
 	cl.Length++
 	if !cl.Remove("testing3") {
 		t.Error("Failed to find newly inserted client testing3 for removal")

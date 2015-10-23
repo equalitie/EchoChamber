@@ -2,17 +2,17 @@ package routes
 
 import (
 	"../clients"
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
-    "encoding/json"
 )
 
 /**
  * Set the content type of a response to application/json
  */
 func SetJsonCT(w *http.ResponseWriter) {
-    w.Header().Set("Content-Type", "application/json")
+	(*w).Header().Set("Content-Type", "application/json")
 }
 
 /**
@@ -22,8 +22,8 @@ func SetJsonCT(w *http.ResponseWriter) {
  * @param errMsg - A message explaining what caused the failure
  */
 func WriteFailure(w http.ResponseWriter, errMsg string) {
-    marshalled, _ := json.Marshal(GeneralFailure{false, errMsg})
-    w.Write(marshalled)
+	marshalled, _ := json.Marshal(GeneralFailure{false, errMsg})
+	w.Write(marshalled)
 }
 
 /**

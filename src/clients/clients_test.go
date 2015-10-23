@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -15,10 +16,11 @@ import (
  * @param URL - A URL of the form http://<address>:<port>/<path>
  * @return the port number as a string, e.g. "8080"
  */
-func getPort(URL string) string {
+func getPort(URL string) int {
 	parsed, _ := url.Parse(URL)
 	parts := strings.Split(parsed.Host, ":")
-	return parts[1]
+	port, _ := strconv.Atoi(parts[1])
+	return port
 }
 
 func TestNotifyJoined(t *testing.T) {
