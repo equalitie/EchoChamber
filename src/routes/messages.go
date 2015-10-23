@@ -9,6 +9,24 @@
 
 package routes
 
+/**
+ * Message written in the general error case to inform the client of failure.
+ */
+type GeneralFailure struct {
+    Success bool   `json:"success"`
+    Reason  string `json:"reason"`
+}
+
+/**
+ * Message written in the case that a message could not be sent.
+ */
+type SendMessageFailure struct {
+    Success    bool   `json:"success"`
+    Dropped    bool   `json:"dropped"`
+    Reason     string `json:"reason"`
+    QueueIndex int    `json:"queueIndex"`
+}
+
 type CreateClientParam struct {
 	Identifier   string   `json:"id"`
 	Participants []string `json:"participants"`
