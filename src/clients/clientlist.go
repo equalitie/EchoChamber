@@ -10,6 +10,7 @@ import (
 type ClientList struct {
 	Length  uint32
 	Clients []Client
+    curPort int
 }
 
 /**
@@ -17,7 +18,7 @@ type ClientList struct {
  */
 func NewClientList() ClientList {
 	clients := make([]Client, 0)
-	return ClientList{0, clients}
+	return ClientList{0, clients, 9005}
 }
 
 /**
@@ -64,4 +65,13 @@ func (c *ClientList) Remove(identifier string) bool {
 	c.Clients = append(c.Clients[:index], c.Clients[index+1:]...)
 	c.Length--
 	return true
+}
+
+/**
+ * Generate the next port number to use for a client
+ */
+func (cl *ClientList)NextPort() int {
+    port := cl.curPort
+    curPort++
+    return port
 }
