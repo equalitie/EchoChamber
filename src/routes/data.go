@@ -10,40 +10,40 @@
 package routes
 
 type CreateClientParam struct {
-    Identifier   string   `json:"id"`
-    Participants []string `json:"participants"`
+	Identifier   string   `json:"id"`
+	Participants []string `json:"participants"`
 }
 
 type CreateClientResp struct {
-    Success bool `json:"success"`
+	Success bool `json:"success"`
 }
 
 type DisconnectClientParam struct {
-    Identifier   string   `json:"id"`
+	Identifier string `json:"id"`
 }
 
 type DisconnectClientResp struct {
-    Success bool `json:"success"`
+	Success bool `json:"success"`
 }
 
 type PromptClientParam struct {
-    From    string `json:"from"`
-    To      string `json:"to"`
-    Message string `json:"message"`
+	From    string `json:"from"`
+	To      string `json:"to"`
+	Message string `json:"message"`
 }
 
 type PromptClientResp struct {
-    Success bool `json:"success"`
+	Success bool `json:"success"`
 }
 
 type SendClientParam struct {
-    From    string `json:"myId"`
-    To      string `json:"to"`
-    Message string `json:"message"`
+	From    string `json:"myId"`
+	To      string `json:"to"`
+	Message string `json:"message"`
 }
 
 type SendClientResp struct {
-    Success    bool `json:"success"`
-    QueueIndex int  `json:"queueIndex"`
-    Dropped    bool `json:"dropped"`
+	Success    bool `json:"success"`
+	QueueIndex int  `json:"queueIndex"`
+	Dropped    bool `json:"dropped"`
 }

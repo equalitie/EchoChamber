@@ -6,6 +6,12 @@ echo "Formatting go files."
 for file in `ls src/*.go`; do
   go fmt $file;
 done
+for file in `ls src/routes/*.go`; do
+  go fmt $file;
+done
+for file in `ls src/clients/*.go`; do
+  go fmt $file;
+done
 
 echo ""
 echo "Installing dependencies."

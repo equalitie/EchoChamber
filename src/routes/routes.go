@@ -1,21 +1,21 @@
 package routes
 
 import (
-    "../clients"
-    "net/http"
-    "github.com/gorilla/mux"
-    "fmt"
+	"../clients"
+	"fmt"
+	"github.com/gorilla/mux"
+	"net/http"
 )
 
 /**
  * A super-simple placeholder route
  */
 func HelloWorld(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "text/plain")
-    w.Write([]byte("Hello world!"))
+	w.Header().Set("Content-Type", "text/plain")
+	w.Write([]byte("Hello world!"))
 }
 
 func InitClientHandlers(router *mux.Router, cl *clients.ClientList) {
-    fmt.Println("Calling InitClientHandlers")
-    router.HandleFunc("/", CreateClient(cl))
+	fmt.Println("Calling InitClientHandlers")
+	router.HandleFunc("/", CreateClient(cl))
 }
