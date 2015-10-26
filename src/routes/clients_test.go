@@ -81,8 +81,12 @@ func TestCreateClient(t *testing.T) {
 		t.Error("Client creation ended in failure")
 	}
 	// End the test by shutting down (hopefully) the client
-	cl.Get("testing1").Disconnect()
-	cl.Remove("testing1")
+	foundClient := cl.Get("testing1")
+	if foundClient == nil {
+		t.Error("Could not get client1")
+	} else {
+		foundClient.Disconnect()
+	}
 }
 
 func TestDisconnectClient(t *testing.T) {
@@ -176,9 +180,17 @@ func TestPromptClient(t *testing.T) {
 	if !pcr.Success {
 		t.Error("Client creation ended in failure")
 	}
-	cl.Get("testing3").Disconnect()
+	foundClient1 := cl.Get("testing3")
+	foundClient2 := cl.Get("testing4")
+	if foundClient1 == nil {
+		t.Error("Could not find client testing3")
+	} else if foundClient2 == nil {
+		t.Error("Could not find client testing4")
+	} else {
+		foundClient1.Disconnect()
+		foundClient2.Disconnect()
+	}
 	cl.Remove("testing3")
-	cl.Get("testing4").Disconnect()
 	cl.Remove("testing4")
 }
 
@@ -229,8 +241,16 @@ func TestSendToClient(t *testing.T) {
 	if !scr.Success {
 		t.Error("Client creation ended in failure")
 	}
-	cl.Get("testing5").Disconnect()
+	foundClient1 := cl.Get("testing5")
+	foundClient2 := cl.Get("testing6")
+	if foundClient1 == nil {
+		t.Error("Could not find client testing5")
+	} else if foundClient2 == nil {
+		t.Error("Could not find client testing6")
+	} else {
+		foundClient1.Disconnect()
+		foundClient2.Disconnect()
+	}
 	cl.Remove("testing5")
-	cl.Get("testing6").Disconnect()
 	cl.Remove("testing6")
 }
