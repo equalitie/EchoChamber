@@ -1,0 +1,15 @@
+---
+- test: Default test
+  clients:
+  - name: bob
+    account: bob@example.com
+    server: localhost
+    room: testchat
+    password: default
+  - name: alice 
+    account: alice@example.com
+    server: localhost
+    room: testchat
+    password: default
+  server: default
+  ensure: None
