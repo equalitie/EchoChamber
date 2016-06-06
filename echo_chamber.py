@@ -6,42 +6,44 @@ from time import sleep
 from getopt import getopt, GetoptError
 from sys import argv
 
-def run_test(test, config):
-    jabberite = config["jabberite_path"] 
-    clients = []
+from test import ConnectionTest
+from client import Client 
+
+def run_test(test, config, debug=False):
+    test_clients = []
     for client in test["clients"]:   
-        process = subprocess.Popen([jabberite, "-a %s" % client["account"], "-s %s" % client["server"], "-r %s" % client["room"], "-p %s" % client["password"]], shell=False, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr= subprocess.PIPE)
-        clients.append(process)
+        c = Client(client, config, debug)
+        if test["test"] == "connection":
+            test_client = ConnectionTest(c)
+            test_clients.append(test_client)
+    fails = 0
+    aborts = 0
     while True:
         sleep(.5)
         pop = []
-        for n in range(len(clients)):
-
-            client = clients[n]
-            stdout = client.stdout.fileno()
-            stdin = client.stdin.fileno()
-            stderr = client.stderr.fileno()
-            rlist = [stdout, stderr]
-            wlist = [stdin]
-            ready = select.select(rlist,wlist,[])
-            for fd in ready[0]:
-                if fd == stdout:
-                    print client.stdout.readline()
-                if fd == stderr:
-                    print client.stderr.readline()
-            for fd in ready[1]:
-                if fd == stdin: # redundant since we only have one write fd
-                    client.stdin.write("hello")
-            if client.poll() != None:
+        for n in range(len(test_clients)):
+            test = test_clients[n]
+            test.run()
+            if isinstance(test.result, bool) or test.client.process.poll() != None:
+                if not test.result:
+                    fails += 1
+                else:
+                    aborts += 1
                 pop.append(n)
         for n in sorted(pop, reverse=True):
-            del clients[n]
-        if len(clients) == 0:
-            return
+            del test_clients[n]
+        if len(test_clients) == 0:
+            break
+    return fails, aborts
 
-def run_tests(tests, config):
+def run_tests(tests, config, debug=False):
     for test in tests:
-        run_test(test, config)
+        fails, aborts = run_test(test, config, debug)
+        if fails > 0:
+            print "test '%s' failed %d times with %d aborts" % (test["name"], fails, aborts)
+        else:
+            print "test '%s' passed with %d aborts" % (test["name"], aborts)
+
 
 if __name__ == "__main__":
     try:
@@ -57,4 +59,4 @@ if __name__ == "__main__":
             test_file = a
     config = yaml.load(file(config_file, "r"))
     tests = yaml.load(file(test_file, "r"))
-    run_tests(tests, config)    
+    run_tests(tests, config, debug=True)    

@@ -1,5 +1,6 @@
 ---
-- test: Default test
+- name: Connection Test 1
+  test: connection
   clients:
   - name: bob
     account: bob@example.com
