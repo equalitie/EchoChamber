@@ -1,2 +1,2 @@
-ld_library_path: /usr/local/lib
+ld_library_path: "/usr/local/lib"
 np1sec_path: /home/app_user/np1sec

@@ -12,23 +12,23 @@ from client import Client
 def run_test(test, config, debug=False):
     test_clients = []
     for client in test["clients"]:   
-        c = Client(client, config, debug)
         if test["test"] == "connection":
-            test_client = ConnectionTest(c)
+            test_client = ConnectionTest(client, config, debug)
             test_clients.append(test_client)
     fails = 0
     aborts = 0
     while True:
-        sleep(.5)
+        sleep(.1)
         pop = []
         for n in range(len(test_clients)):
             test = test_clients[n]
             test.run()
-            if isinstance(test.result, bool) or test.client.process.poll() != None:
+            if isinstance(test.result, bool) or test.client_process.process.poll() != None:
                 if not test.result:
                     fails += 1
-                else:
-                    aborts += 1
+                pop.append(n)
+            if test.client_process.process.poll() != None:
+                aborts += 1
                 pop.append(n)
         for n in sorted(pop, reverse=True):
             del test_clients[n]

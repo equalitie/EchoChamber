@@ -3,14 +3,14 @@
   test: connection
   clients:
   - name: bob
-    account: bob@example.com
-    server: localhost
+    account: bob@localhost
+    server: conference.localhost
     room: testchat
-    password: default
+    password: "" 
   - name: alice 
-    account: alice@example.com
-    server: localhost
+    account: alice@localhost
+    server: conference.localhost
     room: testchat
-    password: default
+    password: ""
   server: default
   ensure: None
