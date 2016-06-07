@@ -6,11 +6,26 @@
     account: bob@localhost
     server: conference.localhost
     room: testchat
-    password: "" 
+    password: "password" 
   - name: alice 
     account: alice@localhost
     server: conference.localhost
     room: testchat
-    password: ""
+    password: "password"
+  - name: steve
+    account: steve@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password" 
+  - name: dave
+    account: dave@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password" 
+  - name: phil
+    account: phil@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password" 
   server: default
   ensure: None

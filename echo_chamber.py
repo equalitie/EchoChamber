@@ -5,20 +5,28 @@ import select
 from time import sleep
 from getopt import getopt, GetoptError
 from sys import argv
+import shlex
 
 from test import ConnectionTest
 from client import Client 
 
+def register_prosody_user(client):
+    devnull = open(os.devnull,"w")
+    subprocess.call(shlex.split("sudo prosodyctl deluser %s" % client["account"]), stdout=devnull, stderr=devnull)
+    addcmd = "sudo prosodyctl adduser %s" % client["account"]
+    process = subprocess.Popen(shlex.split(addcmd), stdin=subprocess.PIPE, stderr=devnull, stdout=devnull)
+    output = process.communicate(os.linesep.join([client["password"], client["password"]]))
+
 def run_test(test, config, debug=False):
     test_clients = []
     for client in test["clients"]:   
+        register_prosody_user(client)
         if test["test"] == "connection":
             test_client = ConnectionTest(client, config, debug)
             test_clients.append(test_client)
     fails = 0
     aborts = 0
     while True:
-        sleep(.1)
         pop = []
         for n in range(len(test_clients)):
             test = test_clients[n]
@@ -37,12 +45,13 @@ def run_test(test, config, debug=False):
     return fails, aborts
 
 def run_tests(tests, config, debug=False):
+	
     for test in tests:
         fails, aborts = run_test(test, config, debug)
         if fails > 0:
-            print "test '%s' failed %d times with %d aborts" % (test["name"], fails, aborts)
+            print "\n\n\ntest '%s' failed %d times with %d aborts\n\n\n" % (test["name"], fails, aborts)
         else:
-            print "test '%s' passed with %d aborts" % (test["name"], aborts)
+            print "\n\n\ntest '%s' passed with %d clients and %d aborted attempts\n\n\n" % (test["name"], len(test["clients"]), aborts)
 
 
 if __name__ == "__main__":
