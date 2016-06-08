@@ -24,7 +24,9 @@ class ConnectionTest:
                 max_ =  num_participants
 
         if max_ == len(self.clients):
-            self.result = (True, "%d clients connected to the room" % max_)
+            self.result = (True, "%d clients connected to room" % max_)
+        else:
+            self.result = (False, "%d clients of %d failed to connect to room" % (len(self.clients) - _max, len(self.clients)))
 
     def run(self):
         for client in self.clients:
