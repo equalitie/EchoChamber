@@ -8,7 +8,7 @@ class Client:
         jabberite = os.path.join(config["np1sec_path"], "jabberite")
         command = jabberite +" --account=" + client["account"]+ " --password=\""+ client["password"] + "\" --server=" +  client["server"] + " --room=" + client["room"]
         env={"LD_LIBRARY_PATH": os.path.join(config["np1sec_path"], ".libs") + ":" + config["ld_library_path"]}
-        self.p = subprocess.Popen(shlex.split(command), shell=False, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr= subprocess.PI, env= env)
+        self.p = subprocess.Popen(shlex.split(command), shell=False, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr = subprocess.PIPE, env=env)
         self.inbuf = ""
         self.outbuf = ""
         self.errbuf = ""

@@ -5,7 +5,7 @@ class ConnectionTest:
         self.clients = []
         for client in clients:
             self.clients.append(Client(client, config, debug))
-        self._results = None
+        self._results = []
         self.result = None
     
     def _end(self, client, result):
@@ -30,7 +30,7 @@ class ConnectionTest:
 
     def run(self):
         for client in self.clients:
-            if client.poll() is not None:
+            if client.p.poll() is not None:
                 continue
             client.inbuf = ""
             join_s = "join: %s: currently" % client.attr["account"].split("@")[0]
