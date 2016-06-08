@@ -1,5 +1,11 @@
 ---
-- name: Connection Test 1
+- name: Load Test 100 Clients
+  test: load
+  clients:
+    count: 100
+    server: conference.localhost
+    room: testchat
+- name: Connection Test 5 Clients
   test: connection
   clients:
   - name: bob
@@ -27,5 +33,3 @@
     server: conference.localhost
     room: testchat
     password: "password" 
-  server: default
-  ensure: None

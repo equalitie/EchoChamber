@@ -7,29 +7,32 @@ from getopt import getopt, GetoptError
 from sys import argv
 import shlex
 
-from test import ConnectionTest
+from test_connection import ConnectionTest
+from test_load import LoadTest
 from client import Client 
 
-def register_prosody_user(client):
-    devnull = open(os.devnull,"w")
-    subprocess.call(shlex.split("sudo prosodyctl deluser %s" % client["account"]), stdout=devnull, stderr=devnull)
-    addcmd = "sudo prosodyctl adduser %s" % client["account"]
-    process = subprocess.Popen(shlex.split(addcmd), stdin=subprocess.PIPE, stderr=devnull, stdout=devnull)
-    output = process.communicate(os.linesep.join([client["password"], client["password"]]))
 
-def run_test(data, config, debug, timeout=0):
+def run_test(test_data, config, debug, timeout=0):
     start = time.time()
-    for client in data["clients"]:   
-        register_prosody_user(client)
-    if data["test"] == "connection":
-        test = ConnectionTest(data["clients"], config, debug)
-    while True:
-        test.run()
-        if test.result is not None:
-            return test.result
-        if timeout:
-            if (time.time() - start) > timeout:
-                return (False, "Test failed to complete after %d seconds" % timeout)
+    if test_data["test"] == "connection":
+        Test = ConnectionTest
+    elif test_data["test"] == "load":
+        Test = LoadTest
+    test = Test(test_data["clients"], config, debug)
+    try:
+        while True:
+            test.run()
+            elapsed = time.time() - start
+            if test.result is not None:
+                return test.result + [elapsed] 
+            if timeout:
+                if elapsed > timeout:
+                    test.force_kill()
+                    return [False, "Test failed to complete after %d seconds" % timeout, elapsed]
+    except KeyboardInterrupt:
+        test.force_kill()
+        return [False, "Test interrupted by user", elapsed]
+
 
 if __name__ == "__main__":
     try:
@@ -37,7 +40,7 @@ if __name__ == "__main__":
     except GetoptError as e:
         print str(e)
     config_file = "config.yml"
-    test_file = "test.yml"
+    test_file = "data.yml"
     debug = False
     timeout = 0
     for o, a in optlist:
@@ -50,9 +53,12 @@ if __name__ == "__main__":
         elif o in ("-t", "--timeout"):
             timeout = int(a)
     config = yaml.load(file(config_file, "r"))
-    data = yaml.load(file(test_file, "r"))[0]
-    result = run_test(data, config, debug, timeout)    
-    if result[0]:
-        print "PASS: %s" % result[1]
-    else:
-        print "FAIL: %s" % result[1]
+    data = yaml.load(file(test_file, "r"))
+    for test_data in data:
+        result = run_test(test_data, config, debug, timeout)    
+        if result == None:
+            print "FAIL for [%s]: test uncompleted" % test_data["name"]
+        if result[0]:
+            print "PASS for [%s]: %s\n\tTime Elapsed: %f" % (test_data["name"], result[1], result[2])
+        else:
+            print "FAIL for [%s]: %s\n\tTime Elapsed: %f" % (test_data["name"], result[1], result[2])
