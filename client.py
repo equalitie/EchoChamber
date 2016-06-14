@@ -5,6 +5,7 @@ import shlex
 
 class Client:
     def __init__(self, client, config, debug=False):
+        self.debug = debug
         jabberite = os.path.join(config["np1sec_path"], "jabberite")
         command = jabberite +" --account=" + client["account"]+ " --password=\""+ client["password"] + "\" --server=" +  client["server"] + " --room=" + client["room"]
         env={"LD_LIBRARY_PATH": os.path.join(config["np1sec_path"], ".libs") + ":" + config["ld_library_path"]}
@@ -13,7 +14,12 @@ class Client:
         self.outbuf = ""
         self.errbuf = ""
         self.attr = client
-        self.debug = debug
+
+    def cleanup(self):
+        try:
+            self.p.kill()
+        except OSError:
+            pass
 
     def communicate(self):
         self.outbuf = ""

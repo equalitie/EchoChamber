@@ -1,17 +1,16 @@
 from client import Client
 from test_connection import ConnectionTest
-from utils import add_prosody_user
 import os
 import random
 
 class LoadTest(ConnectionTest):
-    def _setup_clients(self, clients, config, debug):
-        for n in range(int(clients["count"])):
+    def _setup_clients(self):
+        for n in range(int(self.test_data["clients"]["count"])):
             account = "client%03d@localhost" % n
             client_data = {
                 "account" : account,
                 "password" : "password",
-                "room" : clients["room"],
-                "server" : clients["server"]}
-            self.clients.append(Client(client_data, config, debug))
-            add_prosody_user(client_data)
+                "room" : self.test_data["clients"]["room"],
+                "server" : self.test_data["clients"]["server"]}
+            self.clients.append(Client(client_data, self.config, self.debug))
+            self._adduser(client_data)

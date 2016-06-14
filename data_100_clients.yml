@@ -1,0 +1,600 @@
+- name: Load Test 1 Clients
+  test: load
+  clients:
+    count: 1
+    server: conference.localhost
+    room: testchat
+- name: Load Test 2 Clients
+  test: load
+  clients:
+    count: 2
+    server: conference.localhost
+    room: testchat
+- name: Load Test 3 Clients
+  test: load
+  clients:
+    count: 3
+    server: conference.localhost
+    room: testchat
+- name: Load Test 4 Clients
+  test: load
+  clients:
+    count: 4
+    server: conference.localhost
+    room: testchat
+- name: Load Test 5 Clients
+  test: load
+  clients:
+    count: 5
+    server: conference.localhost
+    room: testchat
+- name: Load Test 6 Clients
+  test: load
+  clients:
+    count: 6
+    server: conference.localhost
+    room: testchat
+- name: Load Test 7 Clients
+  test: load
+  clients:
+    count: 7
+    server: conference.localhost
+    room: testchat
+- name: Load Test 8 Clients
+  test: load
+  clients:
+    count: 8
+    server: conference.localhost
+    room: testchat
+- name: Load Test 9 Clients
+  test: load
+  clients:
+    count: 9
+    server: conference.localhost
+    room: testchat
+- name: Load Test 10 Clients
+  test: load
+  clients:
+    count: 10
+    server: conference.localhost
+    room: testchat
+- name: Load Test 11 Clients
+  test: load
+  clients:
+    count: 11
+    server: conference.localhost
+    room: testchat
+- name: Load Test 12 Clients
+  test: load
+  clients:
+    count: 12
+    server: conference.localhost
+    room: testchat
+- name: Load Test 13 Clients
+  test: load
+  clients:
+    count: 13
+    server: conference.localhost
+    room: testchat
+- name: Load Test 14 Clients
+  test: load
+  clients:
+    count: 14
+    server: conference.localhost
+    room: testchat
+- name: Load Test 15 Clients
+  test: load
+  clients:
+    count: 15
+    server: conference.localhost
+    room: testchat
+- name: Load Test 16 Clients
+  test: load
+  clients:
+    count: 16
+    server: conference.localhost
+    room: testchat
+- name: Load Test 17 Clients
+  test: load
+  clients:
+    count: 17
+    server: conference.localhost
+    room: testchat
+- name: Load Test 18 Clients
+  test: load
+  clients:
+    count: 18
+    server: conference.localhost
+    room: testchat
+- name: Load Test 19 Clients
+  test: load
+  clients:
+    count: 19
+    server: conference.localhost
+    room: testchat
+- name: Load Test 20 Clients
+  test: load
+  clients:
+    count: 20
+    server: conference.localhost
+    room: testchat
+- name: Load Test 21 Clients
+  test: load
+  clients:
+    count: 21
+    server: conference.localhost
+    room: testchat
+- name: Load Test 22 Clients
+  test: load
+  clients:
+    count: 22
+    server: conference.localhost
+    room: testchat
+- name: Load Test 23 Clients
+  test: load
+  clients:
+    count: 23
+    server: conference.localhost
+    room: testchat
+- name: Load Test 24 Clients
+  test: load
+  clients:
+    count: 24
+    server: conference.localhost
+    room: testchat
+- name: Load Test 25 Clients
+  test: load
+  clients:
+    count: 25
+    server: conference.localhost
+    room: testchat
+- name: Load Test 26 Clients
+  test: load
+  clients:
+    count: 26
+    server: conference.localhost
+    room: testchat
+- name: Load Test 27 Clients
+  test: load
+  clients:
+    count: 27
+    server: conference.localhost
+    room: testchat
+- name: Load Test 28 Clients
+  test: load
+  clients:
+    count: 28
+    server: conference.localhost
+    room: testchat
+- name: Load Test 29 Clients
+  test: load
+  clients:
+    count: 29
+    server: conference.localhost
+    room: testchat
+- name: Load Test 30 Clients
+  test: load
+  clients:
+    count: 30
+    server: conference.localhost
+    room: testchat
+- name: Load Test 31 Clients
+  test: load
+  clients:
+    count: 31
+    server: conference.localhost
+    room: testchat
+- name: Load Test 32 Clients
+  test: load
+  clients:
+    count: 32
+    server: conference.localhost
+    room: testchat
+- name: Load Test 33 Clients
+  test: load
+  clients:
+    count: 33
+    server: conference.localhost
+    room: testchat
+- name: Load Test 34 Clients
+  test: load
+  clients:
+    count: 34
+    server: conference.localhost
+    room: testchat
+- name: Load Test 35 Clients
+  test: load
+  clients:
+    count: 35
+    server: conference.localhost
+    room: testchat
+- name: Load Test 36 Clients
+  test: load
+  clients:
+    count: 36
+    server: conference.localhost
+    room: testchat
+- name: Load Test 37 Clients
+  test: load
+  clients:
+    count: 37
+    server: conference.localhost
+    room: testchat
+- name: Load Test 38 Clients
+  test: load
+  clients:
+    count: 38
+    server: conference.localhost
+    room: testchat
+- name: Load Test 39 Clients
+  test: load
+  clients:
+    count: 39
+    server: conference.localhost
+    room: testchat
+- name: Load Test 40 Clients
+  test: load
+  clients:
+    count: 40
+    server: conference.localhost
+    room: testchat
+- name: Load Test 41 Clients
+  test: load
+  clients:
+    count: 41
+    server: conference.localhost
+    room: testchat
+- name: Load Test 42 Clients
+  test: load
+  clients:
+    count: 42
+    server: conference.localhost
+    room: testchat
+- name: Load Test 43 Clients
+  test: load
+  clients:
+    count: 43
+    server: conference.localhost
+    room: testchat
+- name: Load Test 44 Clients
+  test: load
+  clients:
+    count: 44
+    server: conference.localhost
+    room: testchat
+- name: Load Test 45 Clients
+  test: load
+  clients:
+    count: 45
+    server: conference.localhost
+    room: testchat
+- name: Load Test 46 Clients
+  test: load
+  clients:
+    count: 46
+    server: conference.localhost
+    room: testchat
+- name: Load Test 47 Clients
+  test: load
+  clients:
+    count: 47
+    server: conference.localhost
+    room: testchat
+- name: Load Test 48 Clients
+  test: load
+  clients:
+    count: 48
+    server: conference.localhost
+    room: testchat
+- name: Load Test 49 Clients
+  test: load
+  clients:
+    count: 49
+    server: conference.localhost
+    room: testchat
+- name: Load Test 50 Clients
+  test: load
+  clients:
+    count: 50
+    server: conference.localhost
+    room: testchat
+- name: Load Test 51 Clients
+  test: load
+  clients:
+    count: 51
+    server: conference.localhost
+    room: testchat
+- name: Load Test 52 Clients
+  test: load
+  clients:
+    count: 52
+    server: conference.localhost
+    room: testchat
+- name: Load Test 53 Clients
+  test: load
+  clients:
+    count: 53
+    server: conference.localhost
+    room: testchat
+- name: Load Test 54 Clients
+  test: load
+  clients:
+    count: 54
+    server: conference.localhost
+    room: testchat
+- name: Load Test 55 Clients
+  test: load
+  clients:
+    count: 55
+    server: conference.localhost
+    room: testchat
+- name: Load Test 56 Clients
+  test: load
+  clients:
+    count: 56
+    server: conference.localhost
+    room: testchat
+- name: Load Test 57 Clients
+  test: load
+  clients:
+    count: 57
+    server: conference.localhost
+    room: testchat
+- name: Load Test 58 Clients
+  test: load
+  clients:
+    count: 58
+    server: conference.localhost
+    room: testchat
+- name: Load Test 59 Clients
+  test: load
+  clients:
+    count: 59
+    server: conference.localhost
+    room: testchat
+- name: Load Test 60 Clients
+  test: load
+  clients:
+    count: 60
+    server: conference.localhost
+    room: testchat
+- name: Load Test 61 Clients
+  test: load
+  clients:
+    count: 61
+    server: conference.localhost
+    room: testchat
+- name: Load Test 62 Clients
+  test: load
+  clients:
+    count: 62
+    server: conference.localhost
+    room: testchat
+- name: Load Test 63 Clients
+  test: load
+  clients:
+    count: 63
+    server: conference.localhost
+    room: testchat
+- name: Load Test 64 Clients
+  test: load
+  clients:
+    count: 64
+    server: conference.localhost
+    room: testchat
+- name: Load Test 65 Clients
+  test: load
+  clients:
+    count: 65
+    server: conference.localhost
+    room: testchat
+- name: Load Test 66 Clients
+  test: load
+  clients:
+    count: 66
+    server: conference.localhost
+    room: testchat
+- name: Load Test 67 Clients
+  test: load
+  clients:
+    count: 67
+    server: conference.localhost
+    room: testchat
+- name: Load Test 68 Clients
+  test: load
+  clients:
+    count: 68
+    server: conference.localhost
+    room: testchat
+- name: Load Test 69 Clients
+  test: load
+  clients:
+    count: 69
+    server: conference.localhost
+    room: testchat
+- name: Load Test 70 Clients
+  test: load
+  clients:
+    count: 70
+    server: conference.localhost
+    room: testchat
+- name: Load Test 71 Clients
+  test: load
+  clients:
+    count: 71
+    server: conference.localhost
+    room: testchat
+- name: Load Test 72 Clients
+  test: load
+  clients:
+    count: 72
+    server: conference.localhost
+    room: testchat
+- name: Load Test 73 Clients
+  test: load
+  clients:
+    count: 73
+    server: conference.localhost
+    room: testchat
+- name: Load Test 74 Clients
+  test: load
+  clients:
+    count: 74
+    server: conference.localhost
+    room: testchat
+- name: Load Test 75 Clients
+  test: load
+  clients:
+    count: 75
+    server: conference.localhost
+    room: testchat
+- name: Load Test 76 Clients
+  test: load
+  clients:
+    count: 76
+    server: conference.localhost
+    room: testchat
+- name: Load Test 77 Clients
+  test: load
+  clients:
+    count: 77
+    server: conference.localhost
+    room: testchat
+- name: Load Test 78 Clients
+  test: load
+  clients:
+    count: 78
+    server: conference.localhost
+    room: testchat
+- name: Load Test 79 Clients
+  test: load
+  clients:
+    count: 79
+    server: conference.localhost
+    room: testchat
+- name: Load Test 80 Clients
+  test: load
+  clients:
+    count: 80
+    server: conference.localhost
+    room: testchat
+- name: Load Test 81 Clients
+  test: load
+  clients:
+    count: 81
+    server: conference.localhost
+    room: testchat
+- name: Load Test 82 Clients
+  test: load
+  clients:
+    count: 82
+    server: conference.localhost
+    room: testchat
+- name: Load Test 83 Clients
+  test: load
+  clients:
+    count: 83
+    server: conference.localhost
+    room: testchat
+- name: Load Test 84 Clients
+  test: load
+  clients:
+    count: 84
+    server: conference.localhost
+    room: testchat
+- name: Load Test 85 Clients
+  test: load
+  clients:
+    count: 85
+    server: conference.localhost
+    room: testchat
+- name: Load Test 86 Clients
+  test: load
+  clients:
+    count: 86
+    server: conference.localhost
+    room: testchat
+- name: Load Test 87 Clients
+  test: load
+  clients:
+    count: 87
+    server: conference.localhost
+    room: testchat
+- name: Load Test 88 Clients
+  test: load
+  clients:
+    count: 88
+    server: conference.localhost
+    room: testchat
+- name: Load Test 89 Clients
+  test: load
+  clients:
+    count: 89
+    server: conference.localhost
+    room: testchat
+- name: Load Test 90 Clients
+  test: load
+  clients:
+    count: 90
+    server: conference.localhost
+    room: testchat
+- name: Load Test 91 Clients
+  test: load
+  clients:
+    count: 91
+    server: conference.localhost
+    room: testchat
+- name: Load Test 92 Clients
+  test: load
+  clients:
+    count: 92
+    server: conference.localhost
+    room: testchat
+- name: Load Test 93 Clients
+  test: load
+  clients:
+    count: 93
+    server: conference.localhost
+    room: testchat
+- name: Load Test 94 Clients
+  test: load
+  clients:
+    count: 94
+    server: conference.localhost
+    room: testchat
+- name: Load Test 95 Clients
+  test: load
+  clients:
+    count: 95
+    server: conference.localhost
+    room: testchat
+- name: Load Test 96 Clients
+  test: load
+  clients:
+    count: 96
+    server: conference.localhost
+    room: testchat
+- name: Load Test 97 Clients
+  test: load
+  clients:
+    count: 97
+    server: conference.localhost
+    room: testchat
+- name: Load Test 98 Clients
+  test: load
+  clients:
+    count: 98
+    server: conference.localhost
+    room: testchat
+- name: Load Test 99 Clients
+  test: load
+  clients:
+    count: 99
+    server: conference.localhost
+    room: testchat
+- name: Load Test 100 Clients
+  test: load
+  clients:
+    count: 100
+    server: conference.localhost
+    room: testchat

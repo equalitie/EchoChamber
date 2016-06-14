@@ -18,7 +18,7 @@ def run_test(test_data, config, debug, timeout=0):
         Test = ConnectionTest
     elif test_data["test"] == "load":
         Test = LoadTest
-    test = Test(test_data["clients"], config, debug)
+    test = Test(test_data, config, debug)
     try:
         while True:
             test.run()
@@ -27,10 +27,10 @@ def run_test(test_data, config, debug, timeout=0):
                 return test.result + [elapsed] 
             if timeout:
                 if elapsed > timeout:
-                    test.force_kill()
+                    test.cleanup()
                     return [False, "Test failed to complete after %d seconds" % timeout, elapsed]
     except KeyboardInterrupt:
-        test.force_kill()
+        test.cleanup()
         return [False, "Test interrupted by user", elapsed]
 
 

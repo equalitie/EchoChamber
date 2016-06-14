@@ -1,2 +1,3 @@
 ld_library_path: "/usr/local/lib"
-np1sec_path: /home/app_user/np1sec
+np1sec_path: /home/np1sick/np1sec
+prosody_cmd: /usr/bin/prosody

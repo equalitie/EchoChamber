@@ -1,10 +1,12 @@
 ---
-- name: Load Test 100 Clients
+- name: Load Test 10 Clients
   test: load
   clients:
-    count: 100
+    count: 10
     server: conference.localhost
     room: testchat
+  server:
+    host: localhost
 - name: Connection Test 5 Clients
   test: connection
   clients:
