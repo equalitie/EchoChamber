@@ -30,7 +30,8 @@ class ConnectionTest: # need to abstract this into a proper parent class
         self._setup_clients()
         self._results = []
         self.result = None
-        self.start = None
+        self.start_client = 0
+        self.start_time = 0
 
     def cleanup(self):
         for client in self.clients:
@@ -89,12 +90,11 @@ class ConnectionTest: # need to abstract this into a proper parent class
             self.result = [False, "%d clients of %d failed to connect to room" % self._results.count(False)]
 
     def run(self):
-        if not self.start:
-            self.start = time.time()
+        if not self.start_time:
+            self.start_time = time.time()
         for n in range(len(self.clients)):
             client = self.clients[n]
-            t = time.time() - self.start
-            if t > ((n+1) * .5):
+            if n <= self.start_client:
                 client.start()
             else:
                 continue
@@ -102,13 +102,11 @@ class ConnectionTest: # need to abstract this into a proper parent class
                 continue
             client.inbuf = ""
             join_s = "new session in room%s@%s" % (client.attr["room"], client.attr["server"])
-            if join_s in client.outbuf or join_s in client.errbuf and not client.finished:
+            if join_s in client.outbuf and not client.finished:
                 self._results.append( True)
                 client.finished=True
-                print client.attr["account"],
-            elif client.errbuf.count("np1sec can not send messages to room") and not client.finished:
-                client.finished=True
-                self._results.append( False)
+                self.start_client += 1
+                print "%d clients  %.2fs" % (self.start_client, time.time() - self.start_time)
             client.communicate()
         if len(self._results) == len(self.clients):
             self._score()
