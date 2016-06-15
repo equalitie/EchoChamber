@@ -7,31 +7,3 @@
     room: testchat
   server:
     host: localhost
-- name: Connection Test 5 Clients
-  test: connection
-  clients:
-  - name: bob
-    account: bob@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password" 
-  - name: alice 
-    account: alice@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password"
-  - name: steve
-    account: steve@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password" 
-  - name: dave
-    account: dave@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password" 
-  - name: phil
-    account: phil@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password" 

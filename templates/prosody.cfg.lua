@@ -36,7 +36,7 @@ modules_enabled = {
 	-- Generally required
 		"roster"; -- Allow users to have a roster. Recommended ;)
 		"saslauth"; -- Authentication for clients and servers. Recommended if you want to log in.
-		"tls"; -- Add support for secure TLS on c2s/s2s connections
+		--"tls"; -- Add support for secure TLS on c2s/s2s connections
 		"dialback"; -- s2s dialback support
 		"disco"; -- Service discovery
 
@@ -84,7 +84,7 @@ modules_disabled = {
 
 -- Disable account creation by default, for security
 -- For more information see http://prosody.im/doc/creating_accounts
-allow_registration = false;
+allow_registration = true;
 
 -- Debian:
 --   send the server to background.

@@ -13,14 +13,15 @@ from client import Client
 
 
 def run_test(test_data, config, debug, timeout=0):
-    start = time.time()
     if test_data["test"] == "connection":
         Test = ConnectionTest
     elif test_data["test"] == "load":
         Test = LoadTest
     test = Test(test_data, config, debug)
+    start = time.time()
     try:
         while True:
+            time.sleep(0.001)
             test.run()
             elapsed = time.time() - start
             if test.result is not None:

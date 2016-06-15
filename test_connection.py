@@ -1,4 +1,5 @@
 import shutil
+import time
 import shlex
 import tempfile
 import os
@@ -29,6 +30,7 @@ class ConnectionTest: # need to abstract this into a proper parent class
         self._setup_clients()
         self._results = []
         self.result = None
+        self.start = None
 
     def cleanup(self):
         for client in self.clients:
@@ -80,37 +82,34 @@ class ConnectionTest: # need to abstract this into a proper parent class
             self.clients.append(Client(client_data, self.config, self.debug))
             self._adduser(client_data)
     
-    def _end(self, client, result):
-        self._results.append(result)
-        client.cleanup()
-
     def _score(self):
-        max_ = 0
-        for result in self._results:
-            if result == False:
-                self.result = (False, "Client failed to connect")
-                break
-            # Ugly, but will do until we have a debug channel for the client
-            num = int(result.split("currently ")[1].split(" ")[0]) 
-            if num > max_:
-                max_ =  num_participants
-
-        if max_ == len(self.clients):
-            self.result = [True, "%d clients connected to room" % max_]
+        if not False in self._results:
+            self.result = [True, "%d clients connected to room" % len(self._results)]
         else:
-            self.result = [False, "%d clients of %d failed to connect to room" % (len(self.clients) - _max, len(self.clients))]
-        self.cleanup()
+            self.result = [False, "%d clients of %d failed to connect to room" % self._results.count(False)]
 
     def run(self):
-        for client in self.clients:
+        if not self.start:
+            self.start = time.time()
+        for n in range(len(self.clients)):
+            client = self.clients[n]
+            t = time.time() - self.start
+            if t > ((n+1) * .5):
+                client.start()
+            else:
+                continue
             if client.p.poll() is not None:
                 continue
             client.inbuf = ""
-            join_s = "join: %s: currently" % client.attr["account"].split("@")[0]
-            if client.errbuf.count(join_s) == 1:
-                self._end(client, client.errbuf)
-            elif client.errbuf.count("np1sec can not send messages to room"):
-                self._end(client, False)
+            join_s = "new session in room%s@%s" % (client.attr["room"], client.attr["server"])
+            if join_s in client.outbuf or join_s in client.errbuf and not client.finished:
+                self._results.append( True)
+                client.finished=True
+                print client.attr["account"],
+            elif client.errbuf.count("np1sec can not send messages to room") and not client.finished:
+                client.finished=True
+                self._results.append( False)
             client.communicate()
         if len(self._results) == len(self.clients):
-            self._score_test()
+            self._score()
+            self.cleanup()
