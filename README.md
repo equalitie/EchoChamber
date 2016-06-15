@@ -42,6 +42,8 @@ The config.yml must be customized before EchoChamber can be run:
 
 Edit and save config.yml before continuing.
 
+As well, EchoChamber spawns a prosody daemon on demand - any other prosody instance on the system must be stopped before a test can run.
+
 EchoChamber has several command line options, but all are optional:
 - `-c/--config` may be used to specify a custom configuration file (default is `config.yml`)
 - `-d/--data` specifies the path to the data file describing the tests to be run by EchoChamber (default is `data.yml`)
