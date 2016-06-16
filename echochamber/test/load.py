@@ -1,5 +1,5 @@
 from client import Client
-from test_connection import ConnectionTest
+from connection import ConnectionTest
 import os
 import random
 

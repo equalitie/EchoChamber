@@ -6,7 +6,7 @@ import os
 import subprocess
 from jinja2 import Template
 
-from client import Client
+from echochamber.client import Client
 import signal, psutil
 
 def kill_child_processes(parent_pid, sig=signal.SIGTERM):
@@ -18,7 +18,9 @@ def kill_child_processes(parent_pid, sig=signal.SIGTERM):
     for process in children:
         process.send_signal(sig)
 
-class ConnectionTest: # need to abstract this into a proper parent class
+# Subclass and add run(), _score(), and _setup_clients() methods 
+# to implement a new test class
+class BaseTest:
     def __init__(self, test_data, config, debug):
         self.test_data = test_data
         self.config = config
@@ -26,6 +28,9 @@ class ConnectionTest: # need to abstract this into a proper parent class
         self.tempdir = tempfile.mkdtemp(prefix="echochamber_")
         self.clients = []
         self.null = open(os.devnull,"w")
+        self.server_host = "localhost"
+        if "server" in self.test_data and "host" in self.test_data["server"]:
+            self.server_host = self.test_data["server"]["host"]
         self._setup_server()
         self._setup_clients()
         self._results = []
@@ -44,7 +49,6 @@ class ConnectionTest: # need to abstract this into a proper parent class
         cmd = shlex.split("prosodyctl --config %s deluser %s" % (self.prosody_config, client_data["account"]))
         subprocess.call(cmd, stdout=self.null, stderr=self.null)
 
-
     def _adduser(self, client_data):
         addcmd = "prosodyctl --config %s adduser %s" % (self.prosody_config, client_data["account"])
         self._deluser(client_data)
@@ -60,16 +64,13 @@ class ConnectionTest: # need to abstract this into a proper parent class
         for dir_ in [data_path, run_path, config_path, certs_path, log_path]:
             os.makedirs(dir_)
         t = Template(open("templates/prosody.cfg.lua").read())
-        host = "localhost"
-        if "server" in self.test_data and "host" in self.test_data["server"]:
-            host = self.test_data["server"]["host"]
         t_data = {
             "data_path" : data_path,
             "run_path" : run_path,
             "config_path" : config_path,
             "certs_path" : certs_path,
             "log_path" : log_path,
-            "host" : host}
+            "host" : self.server_host}
         self.prosody_config = os.path.join(config_path, "prosody.cfg.lua")
         with open(os.path.join(self.prosody_config), "w") as fh:
             fh.write(t.render(t_data))
@@ -77,37 +78,3 @@ class ConnectionTest: # need to abstract this into a proper parent class
         if self.debug:
             print cmd
         self.pid = subprocess.Popen(shlex.split(cmd), stdout=self.null, stderr=self.null).pid
-
-    def _setup_clients(self): 
-        for client_data in self.test_data["clients"]:
-            self.clients.append(Client(client_data, self.config, self.debug))
-            self._adduser(client_data)
-    
-    def _score(self):
-        if not False in self._results:
-            self.result = [True, "%d clients connected to room" % len(self._results)]
-        else:
-            self.result = [False, "%d clients of %d failed to connect to room" % self._results.count(False)]
-
-    def run(self):
-        if not self.start_time:
-            self.start_time = time.time()
-        for n in range(len(self.clients)):
-            client = self.clients[n]
-            if n <= self.start_client:
-                client.start()
-            else:
-                continue
-            if client.p.poll() is not None:
-                continue
-            client.inbuf = ""
-            join_s = "new session in room%s@%s" % (client.attr["room"], client.attr["server"])
-            if join_s in client.outbuf and not client.finished:
-                self._results.append( True)
-                client.finished=True
-                self.start_client += 1
-                print "%d clients  %.2fs" % (self.start_client, time.time() - self.start_time)
-            client.communicate()
-        if len(self._results) == len(self.clients):
-            self._score()
-            self.cleanup()

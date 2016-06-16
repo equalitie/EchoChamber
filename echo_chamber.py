@@ -7,16 +7,15 @@ from getopt import getopt, GetoptError
 from sys import argv
 import shlex
 
-from test_connection import ConnectionTest
-from test_load import LoadTest
-from client import Client 
-
+from echochamber.tests import *
 
 def run_test(test_data, config, debug, timeout=0):
     if test_data["test"] == "connection":
         Test = ConnectionTest
     elif test_data["test"] == "load":
         Test = LoadTest
+    elif test_data["test"] == "latency":
+        Test = LatencyTest
     test = Test(test_data, config, debug)
     start = time.time()
     try:
