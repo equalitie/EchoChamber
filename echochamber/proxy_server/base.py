@@ -22,20 +22,19 @@ class Forward:
             return False
 
 class BaseProxyServer(object):
-    input_list = []
-    channel = {}
 
     def __init__(self, lhost, lport, fhost, fport):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind((lhost, lport))
-        self.server.listen(200)
-        self.input_list.append(self.server)
+        self.server.listen(0)
+        self.input_list = [self.server]
+        self.channel = {}
         self.fhost = fhost
         self.fport = fport 
 
     def communicate(self):
-        inputready, outputready, exceptready = select.select(self.input_list, [], [])
+        inputready, outputready, exceptready = select.select(self.input_list, [], [], 0)
         for self.s in inputready:
             if self.s == self.server:
                 self.on_accept()
@@ -50,18 +49,14 @@ class BaseProxyServer(object):
         forward = Forward().start(self.fhost, self.fport)
         clientsock, clientaddr = self.server.accept()
         if forward:
-            print clientaddr, "has connected"
             self.input_list.append(clientsock)
             self.input_list.append(forward)
             self.channel[clientsock] = forward
             self.channel[forward] = clientsock
         else:
-            print "Can't establish connection with remote server.",
-            print "Closing connection with client side", clientaddr
             clientsock.close()
 
     def on_close(self):
-        print self.s.getpeername(), "has disconnected"
         #remove objects from input_list
         self.input_list.remove(self.s)
         self.input_list.remove(self.channel[self.s])
@@ -77,6 +72,5 @@ class BaseProxyServer(object):
     def on_recv(self):
         data = self.data
         # here we can parse and/or modify the data before send forward
-        print data
         self.channel[self.s].send(data)
 

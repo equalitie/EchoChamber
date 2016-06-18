@@ -1,4 +1,4 @@
-from client import Client
+from echochamber.client import Client
 from connection import ConnectionTest
 import os
 import random

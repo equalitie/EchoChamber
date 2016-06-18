@@ -1,9 +1,34 @@
 ---
-- name: Load Test 10 Clients
-  test: load
+- name: Connection Test 5 Clients
+  test: latency
   clients:
-    count: 10
+  - name: bob
+    account: bob@localhost
     server: conference.localhost
     room: testchat
-  server:
-    host: localhost
+    latency: 500
+    password: "password"
+  - name: alice
+    account: alice@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password"
+    latency: 1500
+  - name: steve
+    account: steve@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password"
+    latency: 2500
+  - name: dave
+    account: dave@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password"
+    latency: 500
+  - name: phil
+    account: phil@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password"
+    latency: 200

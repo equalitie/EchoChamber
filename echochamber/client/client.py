@@ -17,13 +17,18 @@ class Client:
     def __init__(self, client, config, debug=False):
         self.debug = debug
         jabberite = os.path.join(config["np1sec_path"], "jabberite")
-        self.command = jabberite +" --account=" + client["account"]+ " --password=\""+ client["password"] + "\" --server=" +  client["server"] + " --room=" + client["room"]
+        server = client["server"]
+        if "port" in client.keys():
+            server += ":%s" % str(client["port"])
+        self.command = jabberite +" --account=" + client["account"]+ " --password=\""+ client["password"] + "\" --server=" +  server + " --room=" + client["room"]
         self.env={"LD_LIBRARY_PATH": os.path.join(config["np1sec_path"], ".libs") + ":" + config["ld_library_path"]}
         self.inbuf = ""
         self.outbuf = ""
         self.errbuf = ""
         self.attr = client
         self.p = None
+        if self.debug:
+            print self.command, self.env
         self.finished = False
 
     def start(self):
@@ -33,11 +38,13 @@ class Client:
     def cleanup(self):
         if self.p:
             self.p.kill()
+            if self.debug:
+                print "starting %s" % self.command
 
     def communicate(self):
         self.outbuf = ""
         self.errbuf = ""
-        ready = select.select([self.p.stdout, self.p.stderr], [self.p.stdin], [])  
+        ready = select.select([self.p.stdout, self.p.stderr], [self.p.stdin], [],0)
         for fd in ready[0]:
             if fd == self.p.stdout:
                 self.outbuf = read(self.p.stdout)

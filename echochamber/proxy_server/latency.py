@@ -4,7 +4,7 @@ import time
 class LatencyProxyServer(BaseProxyServer):
     def __init__(self, host, port, fhost, fport, latency=0):
         super(self.__class__, self).__init__(host, port, fhost, fport)
-        self.latency = latency / 100.0
+        self.latency = latency / 1000.0
         self.queue = []
 
     def communicate(self):
@@ -21,4 +21,4 @@ class LatencyProxyServer(BaseProxyServer):
 
     def on_recv(self):
         future = time.time() + self.latency
-        self.queue.append(self.data, future)
+        self.queue.append((self.data, future))

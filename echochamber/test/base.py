@@ -20,7 +20,7 @@ def kill_child_processes(parent_pid, sig=signal.SIGTERM):
 
 # Subclass and add run(), _score(), and _setup_clients() methods 
 # to implement a new test class
-class BaseTest:
+class BaseTest(object):
     def __init__(self, test_data, config, debug):
         self.test_data = test_data
         self.config = config

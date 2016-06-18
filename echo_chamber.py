@@ -7,7 +7,7 @@ from getopt import getopt, GetoptError
 from sys import argv
 import shlex
 
-from echochamber.tests import *
+from echochamber.test import *
 
 def run_test(test_data, config, debug, timeout=0):
     if test_data["test"] == "connection":
@@ -30,6 +30,7 @@ def run_test(test_data, config, debug, timeout=0):
                     test.cleanup()
                     return [False, "Test failed to complete after %d seconds" % timeout, elapsed]
     except KeyboardInterrupt:
+        elapsed = time.time() - start
         test.cleanup()
         return [False, "Test interrupted by user", elapsed]
 
