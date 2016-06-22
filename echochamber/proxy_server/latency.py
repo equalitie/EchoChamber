@@ -13,7 +13,7 @@ class LatencyProxyServer(BaseProxyServer):
         pop = []
         for n in range(len(self.queue)):
             data = self.queue[n]
-            if data[1] >= now:
+            if data[1] <= now:
                 self.channel[self.s].send(data[0])
                 pop.append(n)
         for n in sorted(pop, reverse=True):

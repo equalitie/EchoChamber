@@ -17,10 +17,10 @@ class Client:
     def __init__(self, client, config, debug=False):
         self.debug = debug
         jabberite = os.path.join(config["np1sec_path"], "jabberite")
-        server = client["server"]
+        port = ""
         if "port" in client.keys():
-            server += ":%s" % str(client["port"])
-        self.command = jabberite +" --account=" + client["account"]+ " --password=\""+ client["password"] + "\" --server=" +  server + " --room=" + client["room"]
+            port = " --port=%s " % str(client["port"])
+        self.command = jabberite +" --account=" + client["account"]+ " --password=\""+ client["password"] + "\" --server=" +  client["server"] + " --room=" + client["room"] + port
         self.env={"LD_LIBRARY_PATH": os.path.join(config["np1sec_path"], ".libs") + ":" + config["ld_library_path"]}
         self.inbuf = ""
         self.outbuf = ""

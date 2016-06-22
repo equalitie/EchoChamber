@@ -5,8 +5,6 @@ import select
 import time
 import sys
 
-# Changing the buffer_size and delay, you can improve the speed and bandwidth.
-# But when buffer get to high or delay go too down, you can broke things
 buffer_size = 4096
 
 class Forward:
@@ -40,9 +38,7 @@ class BaseProxyServer(object):
                 self.on_accept()
                 break
             self.data = self.s.recv(buffer_size)
-            if len(self.data) == 0:
-                self.on_close()
-            else:
+            if len(self.data) > 0:
                 self.on_recv()
 
     def on_accept(self):
@@ -55,19 +51,6 @@ class BaseProxyServer(object):
             self.channel[forward] = clientsock
         else:
             clientsock.close()
-
-    def on_close(self):
-        #remove objects from input_list
-        self.input_list.remove(self.s)
-        self.input_list.remove(self.channel[self.s])
-        out = self.channel[self.s]
-        # close the connection with client
-        self.channel[out].close()  # equivalent to do self.s.close()
-        # close the connection with remote server
-        self.channel[self.s].close()
-        # delete both objects from channel dict
-        del self.channel[out]
-        del self.channel[self.s]
 
     def on_recv(self):
         data = self.data
