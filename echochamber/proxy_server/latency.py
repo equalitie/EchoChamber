@@ -6,8 +6,6 @@ class LatencyProxyServer(BaseProxyServer):
         super(self.__class__, self).__init__(host, port, fhost, fport)
         self.latency = latency / 1000.0
         self.queue = {}
-        self.forward = None
-        self.clientsock = None
 
     def communicate(self):
         super(self.__class__, self).communicate()
@@ -28,5 +26,6 @@ class LatencyProxyServer(BaseProxyServer):
         if self.s not in self.queue.keys():
             self.queue[self.s] = []
         future = time.time() + self.latency
-        print self.data
+        # uncomment to debug
+        #print self.data
         self.queue[self.s].append((self.data, future))
