@@ -58,10 +58,11 @@ class BaseTest(object):
     def _setup_server(self):
         data_path = os.path.join(self.tempdir, "var", "lib", "prosody")
         run_path = os.path.join(self.tempdir, "var", "run", "prosody")
+        self.sock_path = os.path.join(self.tempdir, "var", "run", "echochamber")
         config_path = os.path.join(self.tempdir, "etc", "prosody")
         certs_path = os.path.join(config_path, "certs")
         log_path = os.path.join(self.tempdir, "var", "log")
-        for dir_ in [data_path, run_path, config_path, certs_path, log_path]:
+        for dir_ in [data_path, run_path, config_path, certs_path, log_path, self.sock_path]:
             os.makedirs(dir_)
         t = Template(open("templates/prosody.cfg.lua").read())
         t_data = {

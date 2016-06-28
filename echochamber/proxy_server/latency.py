@@ -27,5 +27,5 @@ class LatencyProxyServer(BaseProxyServer):
             self.queue[self.s] = []
         future = time.time() + self.latency
         # uncomment to debug
-        #print self.data
+        #print future, self.data
         self.queue[self.s].append((self.data, future))

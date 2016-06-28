@@ -12,5 +12,6 @@ class LoadTest(ConnectionTest):
                 "password" : "password",
                 "room" : self.test_data["clients"]["room"],
                 "server" : self.test_data["clients"]["server"]}
-            self.clients.append(Client(client_data, self.config, self.debug))
+            sock_path = os.path.join(self.sock_path, client_data["account"])
+            self.clients.append(Client(client_data, self.config, sock_path, self.debug))
             self._adduser(client_data)
