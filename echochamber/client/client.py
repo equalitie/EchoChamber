@@ -4,6 +4,8 @@ import select
 import shlex
 import fcntl
 import socket
+import struct
+import json
 
 def read(output):
     fd = output.fileno()
@@ -17,11 +19,11 @@ def read(output):
 class Client:
     def __init__(self, client, config, sock_path, debug=False):
         self.debug = debug
-        jabberite = os.path.join(config["np1sec_path"], "jabberite")
+        jabberite = os.path.join(config["np1sec_path"], ".libs", "ecjabberite")
         port = ""
         if "port" in client.keys():
             port = " --port=%s " % str(client["port"])
-        self.command = jabberite +" --account=" + client["account"]+ " --password=\""+ client["password"] + "\" --server=" +  client["server"] + " --room=" + client["room"] + port
+        self.command = jabberite +" --account=" + client["account"]+ " --password=\""+ client["password"] + "\" --server=" +  client["server"] + " --room=" + client["room"] + port + " -e " + sock_path
         self.env={"LD_LIBRARY_PATH": os.path.join(config["np1sec_path"], ".libs") + ":" + config["ld_library_path"]}
         self.attr = client
         # our process and debugging socket
@@ -32,23 +34,20 @@ class Client:
         self.inputs = []
         self.outputs = []
         self.inbuf = ""
-        self.outbuf = ""
+        self.outbuf = None
         self.errbuf = ""
         # [XXX] should keep this state in the test class, not here
         self.finished = False
         self.sock_path = sock_path
-
-    def  _create_sock(self):
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        if os.path.isfile(self.sock_path):
-            os.unlink(self.sock_path)
-        sock.bind(self.sock_path)
-        sock.listen(1)
-        return sock
+        self.pack = struct.Struct(">i")
 
     def start(self):
         if not self.s:
-            self.s = self._create_sock()
+            self.s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            if os.path.isfile(self.sock_path):
+                os.unlink(self.sock_path)
+            self.s.bind(self.sock_path)
+            self.s.listen(1)
             self.outputs.append(self.s)
         if not self.p:
             self.p = subprocess.Popen(shlex.split(self.command), shell=False, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr = subprocess.PIPE, env=self.env)
@@ -64,24 +63,25 @@ class Client:
         r,w,e = select.select(self.outputs, self.inputs, [],0)
         for fd in r:
             if fd == self.p.stdout:
-                self.outbuf = read(self.p.stdout)
-                if self.debug:
-                    print self.attr["account"],self.outbuf,
+                out = read(self.p.stdout)
             if fd == self.p.stderr:
-                self.errbuf = read(self.p.stderr)
-                if self.debug:
-                    print self.attr["account"],self.errbuf,
+                out = read(self.p.stderr)
             if fd == self.s:
-                self.c, address = self.sock.accept()
+                self.c, address = self.s.accept()
                 self.outputs.append(self.c)
                 self.inputs.append(self.c)
             if fd == self.c:
-                size = int(self.c.recv(4))
-                self.outbuf = self.c.recv(size)
-                print self.outbuf
+                size = self.pack.unpack(self.c.recv(self.pack.size))
+                self.outbuf = json.loads(self.c.recv(size[0]))
+                if self.debug:
+                    print self.outbuf
 
         for fd in w:
             if fd == self.c:
-                if len(self.inbuf) > 0:
-                    self.c.sendall("%d%s" % (len(self.inbuf), self.inbuf))
-                    self.inbuf = ""
+                if self.inbuf:
+                    if self.debug:
+                        print self.inbuf
+                    size = self.pack.pack(len(self.inbuf))
+                    self.c.send(size)
+                    self.c.sendall(self.inbuf)
+                    self.inbuf = None

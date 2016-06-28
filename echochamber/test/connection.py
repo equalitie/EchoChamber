@@ -1,5 +1,6 @@
 from base import BaseTest
 import time
+import json
 
 class ConnectionTest(BaseTest):
     def _setup_clients(self): 
@@ -24,13 +25,17 @@ class ConnectionTest(BaseTest):
                 continue
             if client.p.poll() is not None:
                 continue
-            client.inbuf = ""
-            join_s = "new session in room%s@%s" % (client.attr["room"], client.attr["server"])
-            if join_s in client.outbuf and not client.finished:
-                self._results.append( True)
+            account = client.attr["account"].split("@")[0]
+            if not client.outbuf:
+                pass
+            elif client.outbuf["request"] == "joined" and account in client.outbuf["participants"] and not client.finished:
+                self._results.append(True)
                 client.finished=True
                 self.start_client += 1
                 print "%d clients  %.2fs" % (self.start_client, time.time() - self.start_time)
+                client.outbuf = None
+                msg = {"request":"prompt", "to": "%s@%s" % (client.attr["room"],client.attr["server"]), "message":"HELLO WORLD"}
+                client.inbuf = json.dumps(msg)
             client.communicate()
         if len(self._results) == len(self.clients):
             self._score()
