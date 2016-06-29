@@ -37,7 +37,6 @@ class Client:
         self.outbuf = None
         self.errbuf = ""
         # [XXX] should keep this state in the test class, not here
-        self.finished = False
         self.sock_path = sock_path
         self.pack = struct.Struct(">i")
 
@@ -65,11 +64,13 @@ class Client:
             if fd == self.p.stdout:
                 out = read(self.p.stdout)
                 if self.debug:
-                    print out
+                    pass
+                    #print out
             if fd == self.p.stderr:
                 out = read(self.p.stderr)
                 if self.debug:
                     print out
+                    #pass
             if fd == self.s:
                 self.c, address = self.s.accept()
                 self.outputs.append(self.c)

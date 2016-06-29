@@ -18,7 +18,7 @@ def kill_child_processes(parent_pid, sig=signal.SIGTERM):
     for process in children:
         process.send_signal(sig)
 
-# Subclass and add run(), _score(), and _setup_clients() methods 
+# Subclass and add run(), and _score() methods
 # to implement a new test class
 class BaseTest(object):
     def __init__(self, test_data, config, debug):
@@ -37,6 +37,13 @@ class BaseTest(object):
         self.result = None
         self.start_client = 0
         self.start_time = 0
+        self.connected = []
+
+    def _setup_clients(self):
+        for client_data in self.test_data["clients"]:
+            sock_path = os.path.join(self.sock_path, client_data["account"])
+            self.clients.append(Client(client_data, self.config, sock_path, self.debug))
+            self._adduser(client_data)
 
     def cleanup(self):
         for client in self.clients:

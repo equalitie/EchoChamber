@@ -1,7 +1,8 @@
 from base import BaseTest
 import time
 
-class ConnectionTest(BaseTest):
+class MessagingTest(BaseTest):
+
     def _score(self):
         if not False in self._results:
             self.result = [True, "%d clients connected to room" % len(self._results)]
@@ -20,15 +21,13 @@ class ConnectionTest(BaseTest):
             if client.p.poll() is not None:
                 continue
             account = client.attr["account"].split("@")[0]
-            if not client.outbuf:
-                pass
             if (client.outbuf and client.outbuf["request"] == "joined" and 
-                    account in client.outbuf["participants"] and client not in self.connected):
-                self._results.append(True)
+               account in client.outbuf["participants"] and 
+               client not in self.connected):
                 self.connected.append(client)
                 self.start_client += 1
-                print "%d clients  %.2fs" % (self.start_client, time.time() - self.start_time)
                 client.outbuf = None
+                msg = {"request":"prompt", "to": "%s@%s" % (client.attr["room"],client.attr["server"]), "message":"HELLO WORLD"}
                 client.inbuf = msg
             client.communicate()
         if len(self._results) == len(self.clients):

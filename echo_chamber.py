@@ -16,6 +16,8 @@ def run_test(test_data, config, debug, timeout=0):
         Test = LoadTest
     elif test_data["test"] == "latency":
         Test = LatencyTest
+    elif test_data["test"] == "messaging":
+        Test = MessagingTest
     test = Test(test_data, config, debug)
     start = time.time()
     try:
