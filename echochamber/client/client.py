@@ -64,8 +64,12 @@ class Client:
         for fd in r:
             if fd == self.p.stdout:
                 out = read(self.p.stdout)
+                if self.debug:
+                    print out
             if fd == self.p.stderr:
                 out = read(self.p.stderr)
+                if self.debug:
+                    print out
             if fd == self.s:
                 self.c, address = self.s.accept()
                 self.outputs.append(self.c)
@@ -79,9 +83,8 @@ class Client:
         for fd in w:
             if fd == self.c:
                 if self.inbuf:
-                    if self.debug:
-                        print self.inbuf
-                    size = self.pack.pack(len(self.inbuf))
+                    inbuf = json.dumps(self.inbuf)
+                    size = self.pack.pack(len(inbuf))
                     self.c.send(size)
-                    self.c.sendall(self.inbuf)
+                    self.c.send(inbuf)
                     self.inbuf = None

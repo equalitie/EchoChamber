@@ -1,6 +1,5 @@
 from base import BaseTest
 import time
-import json
 
 class ConnectionTest(BaseTest):
     def _setup_clients(self): 
@@ -35,7 +34,7 @@ class ConnectionTest(BaseTest):
                 print "%d clients  %.2fs" % (self.start_client, time.time() - self.start_time)
                 client.outbuf = None
                 msg = {"request":"prompt", "to": "%s@%s" % (client.attr["room"],client.attr["server"]), "message":"HELLO WORLD"}
-                client.inbuf = json.dumps(msg)
+                client.inbuf = msg
             client.communicate()
         if len(self._results) == len(self.clients):
             self._score()
