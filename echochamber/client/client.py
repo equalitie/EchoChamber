@@ -16,7 +16,7 @@ def read(output):
     except:
         return ""
 
-class Client:
+class Client(object):
     def __init__(self, client, config, sock_path, debug=False):
         self.debug = debug
         jabberite = os.path.join(config["np1sec_path"], ".libs", "ecjabberite")
@@ -33,7 +33,7 @@ class Client:
         # for our select fds and msg buffers
         self.inputs = []
         self.outputs = []
-        self.inbuf = ""
+        self.inbuf = []
         self.outbuf = None
         self.errbuf = ""
         # [XXX] should keep this state in the test class, not here
@@ -83,9 +83,9 @@ class Client:
 
         for fd in w:
             if fd == self.c:
-                if self.inbuf:
-                    inbuf = json.dumps(self.inbuf)
+                for msg in self.inbuf:
+                    inbuf = json.dumps(msg)
                     size = self.pack.pack(len(inbuf))
                     self.c.send(size)
                     self.c.send(inbuf)
-                    self.inbuf = None
+                self.inbuf = []
