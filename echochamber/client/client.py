@@ -69,14 +69,19 @@ class Client(object):
             if fd == self.p.stderr:
                 out = read(self.p.stderr)
                 if self.debug:
-                    print out
-                    #pass
+                    #print out
+                    pass
             if fd == self.s:
                 self.c, address = self.s.accept()
                 self.outputs.append(self.c)
                 self.inputs.append(self.c)
             if fd == self.c:
-                size = self.pack.unpack(self.c.recv(self.pack.size))
+                try:
+                    msg = self.c.recv(self.pack.size)
+                    size = self.pack.unpack(msg)
+                except struct.error:
+                    print msg
+                    raise
                 self.outbuf = json.loads(self.c.recv(size[0]))
                 if self.debug:
                     print self.outbuf

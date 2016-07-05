@@ -1,34 +1,58 @@
 ---
-- name: Connection Test 5 Clients
-  test: latency
+- name: Messaging Test 10 Clients
+  test: messaging
+  total_time: 200
+  frequency_high: 80
+  frequency_low: 10
+  percentage_high_users: 10
   clients:
   - name: bob
     account: bob@localhost
     server: conference.localhost
     room: testchat
-    latency: 500
     password: "password"
   - name: alice
     account: alice@localhost
     server: conference.localhost
     room: testchat
     password: "password"
-    latency: 1500
   - name: steve
     account: steve@localhost
     server: conference.localhost
     room: testchat
     password: "password"
-    latency: 2500
   - name: dave
     account: dave@localhost
     server: conference.localhost
     room: testchat
     password: "password"
-    latency: 500
   - name: phil
     account: phil@localhost
     server: conference.localhost
     room: testchat
     password: "password"
-    latency: 200
+  - name: janet
+    account: janet@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password"
+  - name: grace
+    account: grace@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password"
+  - name: smith
+    account: smith@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password"
+  - name: charles
+    account: charles@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password"
+  - name: alison
+    account: alison@localhost
+    server: conference.localhost
+    room: testchat
+    password: "password"
