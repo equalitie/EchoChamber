@@ -1,9 +1,9 @@
-from base import BaseTest
+from load import LoadTest
 import time
 import random
 import string
 
-class MessagingTest(BaseTest):
+class MessagingTest(LoadTest):
     def __init__(self, test_data, config, debug): 
         super(self.__class__, self).__init__(test_data, config, debug)
         self.msg_in = self._setup_msg_in()
@@ -30,7 +30,7 @@ class MessagingTest(BaseTest):
                 msg = {
                     "request":"prompt",
                     "to": "%s@%s" % (client.attr["room"],client.attr["server"]),
-                    "message":''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(random.randrange(14,100)))
+                    "message": "%03d: %s" % (n, ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(random.randrange(14,200)))) # prepending serial number for the message to track message sequence
                 }
                 # [XXX] start messaging 2 seconds after global start time - might 
                 # need tweaking for slow joins with large numbers of clients
@@ -59,6 +59,7 @@ class MessagingTest(BaseTest):
     def run(self):
         if not self.start_time:
             self.start_time = time.time()
+            print self.msg_in
         for n in range(len(self.clients)):
             client = self.clients[n]
             if n <= self.start_client:
@@ -85,13 +86,14 @@ class MessagingTest(BaseTest):
                         self.msg_out[client][from_][time.time()] = client.outbuf
                         client.outbuf = {}
                 # process our input message queue
-                for t in self.msg_in[client].keys():
-                    if t + self.start_time <= time.time():
-                        msg = self.msg_in[client].pop(t)
-                        self.msg_in_done[client][t] = msg
-                        client.inbuf.append(msg)
-                if len(self.msg_in[client]) == 0:
-                    self.msg_in.pop(client)
+                if client in self.msg_in.keys():
+                    for t in self.msg_in[client].keys():
+                        if t + self.start_time <= time.time():
+                            msg = self.msg_in[client].pop(t)
+                            self.msg_in_done[client][t] = msg
+                            client.inbuf.append(msg)
+                    if len(self.msg_in[client]) == 0:
+                        self.msg_in.pop(client)
             client.communicate()
         if len(self.msg_in) == 0:
             finished = True
