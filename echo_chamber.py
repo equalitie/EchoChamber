@@ -18,6 +18,8 @@ def run_test(test_data, config, debug, timeout=0):
         Test = LatencyTest
     elif test_data["test"] == "messaging":
         Test = MessagingTest
+    elif test_data["test"] == "reorder":
+        Test = ReorderTest
     test = Test(test_data, config, debug)
     start = time.time()
     try:

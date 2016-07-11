@@ -2,13 +2,27 @@ from load import LoadTest
 import time
 import random
 import string
+import os
 
 class MessagingTest(LoadTest):
-    def __init__(self, test_data, config, debug): 
-        super(self.__class__, self).__init__(test_data, config, debug)
+    def __init__(self, test_data, config, debug):
+        super(MessagingTest, self).__init__(test_data, config, debug)
         self.msg_in = self._setup_msg_in()
         self.msg_in_done = {}
         self.msg_out = {}
+
+
+    def _setup_clients(self):
+        for n in range(int(self.test_data["clients"]["count"])):
+            account = "client%03d@localhost" % n
+            client_data = {
+                "account" : account,
+                "password" : "password",
+                "room" : self.test_data["clients"]["room"],
+                "server" : self.test_data["clients"]["server"]}
+            sock_path = os.path.join(self.sock_path, client_data["account"])
+            self.clients.append(Client(client_data, self.config, sock_path, self.debug))
+            self._adduser(client_data)
 
     def _setup_msg_in(self):
         msg_in = {}
@@ -59,7 +73,6 @@ class MessagingTest(LoadTest):
     def run(self):
         if not self.start_time:
             self.start_time = time.time()
-            print self.msg_in
         for n in range(len(self.clients)):
             client = self.clients[n]
             if n <= self.start_client:

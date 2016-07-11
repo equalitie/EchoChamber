@@ -1,58 +1,27 @@
 ---
-- name: Messaging Test 10 Clients
+- name: Message reordering test 10 Clients
+  test: reorder
+  total_time: 400
+  frequency_high: 80
+  frequency_low: 10
+  percentage_high_users: 10
+  clients:
+    count: 10
+    server: conference.localhost
+    room: testchat
+- name: Messaging Test 30 Clients
   test: messaging
   total_time: 200
   frequency_high: 80
   frequency_low: 10
   percentage_high_users: 10
   clients:
-  - name: bob
-    account: bob@localhost
+    count: 30
     server: conference.localhost
     room: testchat
-    password: "password"
-  - name: alice
-    account: alice@localhost
+- name: Load test 100 clients
+  test: load
+  clients:
+    count: 100
     server: conference.localhost
-    room: testchat
-    password: "password"
-  - name: steve
-    account: steve@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password"
-  - name: dave
-    account: dave@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password"
-  - name: phil
-    account: phil@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password"
-  - name: janet
-    account: janet@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password"
-  - name: grace
-    account: grace@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password"
-  - name: smith
-    account: smith@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password"
-  - name: charles
-    account: charles@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password"
-  - name: alison
-    account: alison@localhost
-    server: conference.localhost
-    room: testchat
-    password: "password"
+    room: loadtest

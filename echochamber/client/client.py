@@ -25,6 +25,8 @@ class Client(object):
             port = " --port=%s " % str(client["port"])
         self.command = jabberite +" --account=" + client["account"]+ " --password=\""+ client["password"] + "\" --server=" +  client["server"] + " --room=" + client["room"] + port + " -e " + sock_path
         self.env={"LD_LIBRARY_PATH": os.path.join(config["np1sec_path"], ".libs") + ":" + config["ld_library_path"]}
+        if debug:
+            print self.command
         self.attr = client
         # our process and debugging socket
         self.p = None
@@ -64,13 +66,11 @@ class Client(object):
             if fd == self.p.stdout:
                 out = read(self.p.stdout)
                 if self.debug:
-                    pass
-                    #print out
+                    print self.attr["account"], out
             if fd == self.p.stderr:
                 out = read(self.p.stderr)
                 if self.debug:
-                    #print out
-                    pass
+                    print self.attr["account"], out
             if fd == self.s:
                 self.c, address = self.s.accept()
                 self.outputs.append(self.c)
@@ -80,11 +80,10 @@ class Client(object):
                     msg = self.c.recv(self.pack.size)
                     size = self.pack.unpack(msg)
                 except struct.error:
-                    print msg
-                    raise
+                    print self.attr["account"], msg
                 self.outbuf = json.loads(self.c.recv(size[0]))
                 if self.debug:
-                    print self.outbuf
+                    print self.attr["account"], self.outbuf
 
         for fd in w:
             if fd == self.c:
