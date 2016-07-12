@@ -1,6 +1,0 @@
-- name: Test Timings for 100 Clients
-  test: load
-  clients:
-    count: 100
-    server: conference.localhost
-    room: testchat
