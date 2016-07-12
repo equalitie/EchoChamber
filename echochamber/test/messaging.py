@@ -3,6 +3,7 @@ import time
 import random
 import string
 import os
+from echochamber.client import Client
 
 class MessagingTest(LoadTest):
     def __init__(self, test_data, config, debug):

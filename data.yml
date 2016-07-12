@@ -19,8 +19,9 @@
     count: 30
     server: conference.localhost
     room: testchat
-- name: Load test 100 clients
+- name: Load test 100 clients, parallel connections
   test: load
+  parallel: yes
   clients:
     count: 100
     server: conference.localhost
