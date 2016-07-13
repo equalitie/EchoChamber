@@ -76,7 +76,9 @@ class MessagingTest(LoadTest):
             self.start_time = time.time()
         for n in range(len(self.clients)):
             client = self.clients[n]
-            if n <= self.start_client:
+            if "parallel" in self.test_data.keys() and self.test_data["parallel"]:
+                client.start()
+            elif n <= self.start_client:
                 client.start()
             else:
                 continue
