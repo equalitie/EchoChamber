@@ -15,12 +15,13 @@
   frequency_high: 80
   frequency_low: 10
   percentage_high_users: 10
+  threshhold: 300
   clients:
     count: 30
     server: conference.localhost
     room: testchat
 - name: Load test 100 clients, parallel connections
-  test: load
+  test: connection
   parallel: yes
   clients:
     count: 100

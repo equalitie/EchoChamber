@@ -53,5 +53,3 @@ EchoChamber has several command line options, but all are optional:
 ```
 $ python echo_chamber -d customtest.yml -t 50 --debug
 ```
-
-

@@ -38,7 +38,6 @@ def run_test(test_data, config, debug, timeout=0):
         test.cleanup()
         return [False, "Test interrupted by user", elapsed]
 
-
 if __name__ == "__main__":
     try:
         optlist, args = getopt(argv[1:], "c:d:t:", ["config", "data", "debug", "timeout"])
