@@ -12,14 +12,14 @@ from echochamber.test import *
 def run_test(test_data, config, debug, timeout=0):
     if test_data["test"] == "connection":
         Test = ConnectionTest
-    elif test_data["test"] == "load":
-        Test = LoadTest
     elif test_data["test"] == "latency":
         Test = LatencyTest
     elif test_data["test"] == "messaging":
         Test = MessagingTest
     elif test_data["test"] == "reorder":
         Test = ReorderTest
+    elif test_data["test"] == "drop":
+        Test = DropTest
     test = Test(test_data, config, debug)
     start = time.time()
     try:

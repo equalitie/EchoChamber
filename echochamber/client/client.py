@@ -81,6 +81,7 @@ class Client(object):
                     size = self.pack.unpack(msg)
                 except struct.error:
                     print self.attr["account"], msg
+                    raise
                 self.outbuf = json.loads(self.c.recv(size[0]))
                 if self.debug:
                     print self.attr["account"], self.outbuf
