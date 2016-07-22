@@ -12,7 +12,6 @@ class MessagingTest(LoadTest):
         self.msg_in_done = {}
         self.msg_out = {}
 
-
     def _setup_clients(self):
         for n in range(int(self.test_data["clients"]["count"])):
             account = "client%03d@localhost" % n

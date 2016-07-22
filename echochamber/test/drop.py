@@ -12,9 +12,9 @@ class DropTest(MessagingTest):
                 "account" : account,
                 "password" : "password",
                 "room" : self.test_data["clients"]["room"],
-                "server" : self.test_data["clients"]["server"].
+                "server" : self.test_data["clients"]["server"],
                 "port" : 15524 + n }
-            self.proxy_servers.append(DropProxyServer("localhost", client_data["port"], self.server_host, 5222, modulo=self.test_data["drop_every_n_packet"])) 
+            self.proxy_servers.append(DropProxyServer("localhost", client_data["port"], self.server_host, 5222, modulo=int(self.test_data["drop_every_n_packet"])))
             sock_path = os.path.join(self.sock_path, client_data["account"])
             self.clients.append(Client(client_data, self.config, sock_path, self.debug))
             self._adduser(client_data)

@@ -20,7 +20,6 @@ class Forward:
             return False
 
 class BaseProxyServer(object):
-
     def __init__(self, lhost, lport, fhost, fport):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -56,4 +55,3 @@ class BaseProxyServer(object):
         data = self.data
         # here we can parse and/or modify the data before send forward
         self.channel[self.s].send(data)
-

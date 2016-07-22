@@ -1,5 +1,17 @@
 ---
 - name: Message reordering test 10 Clients
+  test: drop
+  total_time: 400
+  frequency_high: 80
+  frequency_low: 10
+  percentage_high_users: 10
+  drop_every_n_packet: 8
+  parallel: yes
+  clients:
+    count: 10
+    server: conference.localhost
+    room: testchat
+- name: Message reordering test 10 Clients
   test: reorder
   total_time: 400
   frequency_high: 80
