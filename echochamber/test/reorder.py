@@ -22,7 +22,7 @@ class ReorderTest(MessagingTest):
     def run(self):
         for proxy_server in self.proxy_servers:
             proxy_server.communicate()
-        super(self.__class__, self).run()
+        super(ReorderTest, self).run()
 
     def _score(self):
         pass # stubbed

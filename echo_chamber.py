@@ -20,6 +20,10 @@ def run_test(test_data, config, debug, timeout=0):
         Test = ReorderTest
     elif test_data["test"] == "drop":
         Test = DropTest
+    elif test_data["test"] == "disconnect":
+        Test = DisconnectTest
+    elif test_data["test"] == "nonresponsive":
+        Test = NonResponsiveTest
     test = Test(test_data, config, debug)
     start = time.time()
     try:
@@ -43,6 +47,7 @@ if __name__ == "__main__":
         optlist, args = getopt(argv[1:], "c:d:t:", ["config", "data", "debug", "timeout"])
     except GetoptError as e:
         print str(e)
+	raise
     config_file = "config.yml"
     test_file = "data.yml"
     debug = False

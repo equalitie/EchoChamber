@@ -41,6 +41,7 @@ class Client(object):
         # [XXX] should keep this state in the test class, not here
         self.sock_path = sock_path
         self.pack = struct.Struct(">i")
+        self.joined = False
 
     def start(self):
         if not self.s:

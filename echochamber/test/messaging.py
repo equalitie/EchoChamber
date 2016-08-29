@@ -29,11 +29,20 @@ class MessagingTest(LoadTest):
         # in seconds
         total_time = int(self.test_data["total_time"])
         # num of messages for frequent messengers
-        freq_h = int(self.test_data["frequency_high"])
+        try:
+            freq_h = int(self.test_data["frequency_high"])
+        except KeyError: 
+            freq_h = int(total_time * .8)
         # num of messages for less frequent messengers
-        freq_l = int(self.test_data["frequency_low"])
+        try:
+            freq_l = int(self.test_data["frequency_low"])
+        except KeyError:
+            freq_l = int(total_time * .2)
         # percentage of users who are frequent messengers
-        percent_h = int(self.test_data["percentage_high_users"])
+        try:
+            percent_h = int(self.test_data["percentage_high_users"])
+        except KeyError:
+            percent_h = 20
         clients_h = random.sample(self.clients, int(len(self.clients) * (percent_h / 100.0)))
         for client in self.clients:
             msg_in[client] = {}
@@ -92,6 +101,7 @@ class MessagingTest(LoadTest):
                     # set up our per-client msg queues
                     self.msg_in_done[client] = {}
                     self.msg_out[client] = {}
+                    client.joined = True
             else: # this client is already connected so check if there are messages
                 if "request" in client.outbuf.keys():
                     if client.outbuf["request"] == "received":
