@@ -1,0 +1,31 @@
+EchoChamber Tests
+=================
+
+EchoChamber is test harness and set of integration tests for the np1sec library.
+
+# Running
+
+EchoChamber uses the `pytest`` framework for collecting and running EchoChamber tests. The EchoChamber specific pytest options are listed in the pytest help message.
+
+
+      --show-cli-output     show output from all subprocesses (v. noisy)
+      --debug-mode          Enable debug features such as interactive prompts and
+                            invitation of external jabberite clients.
+      -C ECHOCHAMBER_CONFIG, --echochamber-config=ECHOCHAMBER_CONFIG
+                            Location of the EchoChamber config file.
+
+Running the tests without interactive output:
+
+    py.test
+
+Running the test with extra logging:
+
+    py.test -s -v
+
+Running the tests in debug mode:
+
+    py.test -s -v --debug-mode
+
+A subset of tests can be run by providing a set of test file names to py.test:
+
+    py.test -s -v test_connection.py

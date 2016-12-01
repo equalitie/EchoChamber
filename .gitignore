@@ -1,0 +1,10 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.pyc
+config.yml
+data.yml
+.tox
+build
+dist
+*.egg-info
+*.log
+.cache
