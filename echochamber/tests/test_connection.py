@@ -27,7 +27,7 @@ def invite_debug_user_to_conversation(leader, debug_user):
 @pytest.mark.parametrize("num_clients", [
     2,
     5,
-    20,
+    10,
 ])
 def test_client_connection(client_factory, debug, num_clients):
     """
@@ -52,6 +52,8 @@ def test_client_connection(client_factory, debug, num_clients):
 
     # Start a new np1sec conversation
     time_start = time.time()
+    logging.info("Starting connection timer")
+
     conversation_id = leader.create_conversation()
     leader.select_conversation(conversation_id)
     logging.info("Created and selected conversation %d", conversation_id)
