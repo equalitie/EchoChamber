@@ -1,6 +1,8 @@
 EchoChamber Tests
 =================
 
+[![CircleCI](https://circleci.com/gh/equalitieC/EchoChamber/tree/pytest-expect.svg?style=svg)](https://circleci.com/gh/equalitie/EchoChamber/tree/pytest-expect)
+
 EchoChamber is test harness and set of integration tests for the np1sec library.
 
 # Running
