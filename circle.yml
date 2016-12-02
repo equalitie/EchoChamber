@@ -4,11 +4,11 @@ dependencies:
 
   post:
     - sudo apt-get update
-    - sudo apt-get install -y prosody
-    - sudo service prosody stop
+    - sudo apt-get install -y prosody libpurple0 libgcrypt20 # Install runtime dependencies
     - bash scripts/build-np1sec-ci.sh  # Build np1sec if not already cached
     - sed 's/..\/np1sec/np1sec/g' config.yml.example > config.yml
     - pip install -r requirements.txt
+    - sudo service prosody stop # Stop the default prosody server
 
 test:
   override:
