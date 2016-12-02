@@ -5,5 +5,4 @@ if [ ! -e np1sec/jabberite ]; then
   git clone https://github.com/equalitie/np1sec.git && cd np1sec
   cmake .
   make
-  sudo make install
 fi
