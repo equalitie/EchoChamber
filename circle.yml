@@ -1,0 +1,15 @@
+dependencies:
+  cache_directories:
+    - np1sec  # Cache the built np1sec client and library
+
+  post:
+    - sudo apt-get update
+    - sudo apt-get install -y prosody
+    - sudo service prosody stop
+    - bash scripts/build-np1sec-ci.sh  # Build np1sec if not already cached
+    - sed 's/..\/np1sec/np1sec/g' config.yml.example > config.yml
+
+test:
+  override:
+    - pytest -s -v
+    - tox
