@@ -62,9 +62,9 @@ def test_client_connection(client_factory, debug, num_clients):
     for client in clients:
         leader.invite_and_join_conversation(client)
 
-    logging.info("All clients have been invited to the channel, sending message tests")
     logging.info("Starting conversation with %d participants took %0.2f seconds",
                  num_clients, time.time() - time_start)
+    logging.info("All clients have been invited to the channel, sending message tests")
 
     if debug:
         invite_debug_user_to_conversation(leader, debug_user)
