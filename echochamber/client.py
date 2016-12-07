@@ -1,5 +1,7 @@
 import os
+import re
 import logging
+import StringIO
 
 import pexpect
 
@@ -15,12 +17,21 @@ class Client(object):
         self.port = str(port)
 
         self._process = None
+        self._process_output = StringIO.StringIO()
         self.conversation_id = None
         self.debug = False
 
         self.np1sec_path = config["np1sec_path"]
         self.ld_library_path = config["ld_library_path"]
         self.jabberite_bin = os.path.join(self.np1sec_path, "jabberite")
+
+    def set_debug(self, enable=True):
+        """Enable debug log for this client"""
+        if enable:
+            log_file = open("{}.log".format(self.username), "wb")
+            self._process.logfile = log_file
+        else:
+            self._process.logfile = None
 
     def send_message(self, message):
         """Send a message to the jabberite client"""
@@ -30,13 +41,26 @@ class Client(object):
         """Cleaner interface to expect on the jabberite pexpect process"""
         return self._process.expect(pattern, *args, **kwargs)
 
+    def get_output(self, timeout=0.1):
+        """
+        Return all data output from Jabberite
+
+        The timeout will fire after reading the output.
+        """
+        try:
+            self.expect(pexpect.EOF, timeout=timeout)
+        except pexpect.TIMEOUT:
+            pass
+        return self._process_output.getvalue()
+
     def connect(self, room, server="conference.localhost"):
         """Start the jabberite client process"""
         command = ["--account", self.xmpp_user,
                    "--password", self.xmpp_password,
                    "--server", server,
                    "--port", self.port,
-                   "--room", room]
+                   "--room", room,
+                   ]
         self.env = {"LD_LIBRARY_PATH": "{}:{}".format(os.path.join(self.np1sec_path),
                                                       self.ld_library_path)}
 
@@ -47,12 +71,8 @@ class Client(object):
                 env=self.env, echo=False, timeout=30,
             )
 
-            if self.debug:
-                # Write output from this client to the a log file.
-                log_file = open("{}.log".format(self.username), "wb")
-                self._process.logfile = log_file
-            else:
-                self._process.logfile = None
+            self._process.logfile = None
+            self._process.logfile_read = self._process_output
 
             # For debugging full stdout can be echoed to screen.
             # self._process.logfile = sys.stdout
@@ -102,6 +122,15 @@ class Client(object):
         # with the following expect().
         self.expect("{} joined the chat session".format(client.username))
         logging.info("%s joined conversation %d", client.username, self.conversation_id)
+
+    def get_all_messages(self):
+        """Parse all messages as seen by this client"""
+        message_pattern = re.compile(r"^\*\* <(\d+)> <(\w+)> (.*)[\r*]$", re.MULTILINE)
+        messages = []
+
+        for match in message_pattern.findall(self.get_output()):
+            messages.append(match[1:])
+        return messages
 
     def stop(self):
         if self._process:

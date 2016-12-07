@@ -8,6 +8,8 @@ import logging
 import pytest
 import pexpect
 
+from echochamber.utils import create_client_connections
+
 
 def invite_debug_user_to_conversation(leader, debug_user):
     """
@@ -32,6 +34,9 @@ def invite_debug_user_to_conversation(leader, debug_user):
 def test_client_connection(client_factory, debug, num_clients):
     """
     Test that clients can connect, joining a conversation and each sending a message
+
+    This test is a basic overall connection and messaging test. In includes extra
+    testing interface for external clients to aid in debugging these tests.
     """
     clients = []
 
@@ -39,12 +44,7 @@ def test_client_connection(client_factory, debug, num_clients):
         # Create a user which can be connected too with an external Jabberite client
         debug_user = client_factory("debug")
 
-    for client_id in range(0, num_clients):
-        client = client_factory(client_id)
-        client.connect("connection-test")  # Connect to the XMPP room
-        clients.append(client)
-
-    time.sleep(1)  # Wait for all users to finish joining the room
+    clients = create_client_connections(client_factory, num_clients, "connection-test")
 
     # The first client is designated as the leader, they create the conversation
     # and invite all other users into it.
@@ -69,6 +69,7 @@ def test_client_connection(client_factory, debug, num_clients):
     if debug:
         invite_debug_user_to_conversation(leader, debug_user)
 
+    # Perform a basic messaging test
     # Send a message from each user and verify they were all received by the leader
     for client in clients:
         message = "test {}".format(client.username)
