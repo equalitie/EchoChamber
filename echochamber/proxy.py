@@ -3,11 +3,13 @@ import SocketServer
 import threading
 import logging
 import time
+import bisect
+import select
 
 buffer_size = 4096
 
-logging.basicConfig(level=logging.DEBUG)
-
+logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.DEBUG)
 
 class ProxyInterface(object):
     """
@@ -15,19 +17,57 @@ class ProxyInterface(object):
     """
     def process_data(self, source, dest):
         """Infinite loop and proxy data between source and destination socket"""
-        try:
-            while True:
-                data = source.recv(buffer_size)
-                if len(data) > 0:
-                    logging.debug("Received: %d", len(data))
-                    dest.write(data)
-                else:
-                    raise Exception("Connection disconnected")
+        queue = []
+        latency = self.server.latency
 
-                # Send any data which has been queued
-                # self.send_queued()
-        except Exception, e:
-            logging.debug(e)
+        while True:
+            # Write any data which has been queued and is now ready to send
+            while queue and queue[0][0] <= time.time():
+                queued_time, data = queue.pop()
+                logging.debug("Sending from queue %d", len(data))
+                dest.write(data)
+
+            data = None
+            try:
+                input_ready, _, _ = select.select([source], [], [], 0)
+                for s in input_ready:
+                    data = s.recv(buffer_size)
+                    if not data:
+                        raise Exception("Connection closed")
+
+            except Exception:
+                # Close connections when an exception occurs
+                logging.exception("Connection closed")
+                source.close()
+                break
+
+            if not data:
+                continue
+
+            # print("data", data)
+
+            # try:
+            #     # Read any new data available on the socket
+            #     read
+            #     if select.se
+            #     data = source.recv(buffer_size)
+            # except socket.error as e:
+            #     logging.exception("exception reading data")
+            #     continue
+
+            logging.debug("Received: %d", len(data))
+
+            # Queue the received data if a latency value is set
+            if latency:
+                logging.debug("Queueing %d", len(data))
+                # logging.debug("now %f, scheduled %f", time.time(), time.time() + latency)
+                bisect.insort_right(queue, (time.time() + latency, data))
+            else:
+                # Send data immediately if no latency is specified
+                dest.write(data)
+
+        # except Exception, e:
+        #     logging.debug(e)
         dest.stop_forwarding()
 
     def write(self, data):
@@ -36,7 +76,7 @@ class ProxyInterface(object):
         self.request.send(data)
 
     def stop_forwarding(self):
-        logging.debug("Stop forwarding for %s", self)
+        logging.debug("Stop forwarding %s", self)
         self.request.close()
 
 
@@ -48,6 +88,7 @@ class Forwarder(threading.Thread, ProxyInterface):
         threading.Thread.__init__(self)
         self.source = source
         self.server = source.server
+        self.daemon = True
 
         self.host, self.port = destination
         self.request = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -84,9 +125,10 @@ class ProxyServer(object):
 
     Each client connection gets spawned out to a new thread.
     """
-    def __init__(self, server_tuple, destination):
+    def __init__(self, server_tuple, destination, latency=None):
         self.server = ThreadedTCPServer(server_tuple, ThreadedTCPRequestHandler)
         self.server.destination = destination
+        self.server.latency = latency / 1000.0
 
         # Start the listening server in another thread
         server_thread = threading.Thread(target=self.server.serve_forever)
@@ -96,13 +138,8 @@ class ProxyServer(object):
         server_ip, server_port = self.server.server_address
         logging.info("Proxy server listening on %s:%s", server_ip, server_port)
 
-    def set_latency(self, latency=None):
-        """
-        Set the latency for each client connection
-        """
-        self.server.latency = latency
-
     def stop(self):
+        logging.info("Stopping proxy")
         self.server.shutdown()
 
 
@@ -111,12 +148,12 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 
 if __name__ == "__main__":
-    # Start
-    proxy = ProxyServer(("127.0.0.1", 9000), ("127.0.0.1", 5222))
+    # Start a test instance of the proxy when called directly
+    proxy = ProxyServer(("127.0.0.1", 0), ("127.0.0.1", 5222), 2000)
     try:
         while True:
             time.sleep(1)
     except:
         pass
-    print "...server stopping."
+    logging.info("...server stopping.")
     proxy.stop()

@@ -11,10 +11,11 @@ class Client(object):
     Interface with a jabberite client which communicates using the
     np1sec protocol over XMPP
     """
-    def __init__(self, xmpp_account, port=5222, config=None):
+    def __init__(self, xmpp_account, port=5222, config=None, proxy=None):
         self.xmpp_user, self.xmpp_password = xmpp_account["user"], xmpp_account["password"]
         self.username = self.xmpp_user.split("@")[0]
         self.port = str(port)
+        self.proxy = proxy
 
         self._process = None
         self._process_output = StringIO.StringIO()

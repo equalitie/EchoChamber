@@ -1,8 +1,17 @@
 import time
 import logging
+import socket
 
 
-def create_client_connections(client_factory, num_clients, room_name="test"):
+def find_available_port():
+    s = socket.socket()
+    s.bind(('', 0))
+    port = s.getsockname()[1]
+    s.close()
+    return port
+
+
+def create_client_connections(client_factory, num_clients, room_name="test", proxy_port=None):
     """
     Helper to create N jabberite client connections to an XMPP room.
 
@@ -10,7 +19,7 @@ def create_client_connections(client_factory, num_clients, room_name="test"):
     """
     clients = []
     for client_id in range(0, num_clients):
-        client = client_factory(client_id)
+        client = client_factory(client_id, port=proxy_port)
         client.connect("messaging-test")  # Connect to the XMPP room
         clients.append(client)
 

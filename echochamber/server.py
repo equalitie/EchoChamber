@@ -1,17 +1,8 @@
 import os
 import logging
-import socket
 import subprocess
 
 import jinja2
-
-
-def find_available_port():
-    s = socket.socket()
-    s.bind(('', 0))
-    port = s.getsockname()[1]
-    s.close()
-    return port
 
 
 class XMPPServer(object):

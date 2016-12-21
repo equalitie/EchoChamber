@@ -4,8 +4,10 @@ import logging
 import yaml
 import os
 
+# from echochamber.proxy import BaseProxyServer
 from echochamber.server import XMPPServer
 from echochamber.client import Client
+# from echochamber.utils import find_available_port
 
 
 def pytest_addoption(parser):
@@ -101,9 +103,11 @@ def client_factory(xmpp_server, xmpp_account_factory, config):
     """
     clients = []
 
-    def create_client(client_name):
+    def create_client(client_name, port=None):
         xmpp_account = xmpp_account_factory(client_name)
-        client = Client(xmpp_account, port=xmpp_server.c2s_port, config=config)
+        if not port:
+            port = xmpp_server.c2s_port
+        client = Client(xmpp_account, port=port, config=config)
         clients.append(client)
         return client
 
