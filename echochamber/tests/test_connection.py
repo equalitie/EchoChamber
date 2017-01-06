@@ -60,7 +60,10 @@ def test_client_connection(client_factory, debug, num_clients):
 
     # Invite all the other users and get each of them to join the conversation.
     for client in clients:
+        user_connection_timer = time.time()
         leader.invite_and_join_conversation(client)
+        logging.info("Client %s connect in %0.3f seconds",  client.username,
+                     time.time() - user_connection_timer)
 
     logging.info("Starting conversation with %d participants took %0.2f seconds",
                  num_clients, time.time() - time_start)
