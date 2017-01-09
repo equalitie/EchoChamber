@@ -59,7 +59,10 @@ def test_messaging(client_factory, debug, num_clients):
 
     while message_queue:
         # Check if first message is ready to be sent (we have reached the scheduled send time)
-        if (time.time() - start_time) > message_queue[0][0]:
+        elapsed = time.time() - start_time
+        send_at = message_queue[0][0]
+
+        if elapsed >= send_at:
             queued_time, client = message_queue.pop(0)
             message_id += 1
             logging.info("Sending message %d for %s queued at %0.2f",
@@ -70,6 +73,9 @@ def test_messaging(client_factory, debug, num_clients):
                 time=queued_time,
                 username=client.username)
             )
+        else:
+            time.sleep(send_at - elapsed)
+
 
     logging.info("Finished sending %d messages", total_messages)
 
