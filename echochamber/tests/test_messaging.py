@@ -12,14 +12,7 @@ import pytest
 from echochamber.utils import create_client_connections, establish_channel, find_available_port
 from echochamber.proxy import ProxyServer
 
-
-@pytest.mark.parametrize("num_clients", [
-    10,
-])
-def test_messaging(client_factory, debug, num_clients):
-    """
-    Test that clients connect and can send varying number of messages
-    """
+def connect_and_send_messages(client_factory, debug, num_clients, server_port = None):
     total_time = 200  # Time period for sending all messages
     frequency_high = 0.60  # 6 messages every 10 seconds
     frequency_low = 0.10  # 1 message every 10 seconds
@@ -27,7 +20,7 @@ def test_messaging(client_factory, debug, num_clients):
     percentage_high_users = 0.1
 
     # Join all clients to the room
-    clients = create_client_connections(client_factory, num_clients)
+    clients = create_client_connections(client_factory, num_clients, server_port)
     establish_channel(clients)
     logging.info("All clients have been invited to the channel, sending message tests")
 
@@ -43,6 +36,7 @@ def test_messaging(client_factory, debug, num_clients):
             msg_freq = frequency_high
         else:
             msg_freq = frequency_low
+
         num_messages = int(total_time * msg_freq)
 
         # Schedule each message to be sent by this client
@@ -88,6 +82,15 @@ def test_messaging(client_factory, debug, num_clients):
 
     logging.info("All clients received all sent messages")
 
+@pytest.mark.parametrize("num_clients", [
+    10,
+])
+def test_messaging(client_factory, debug, num_clients):
+    """
+    Test that clients connect and can send varying number of messages
+    """
+    connect_and_send_messages(client_factory, debug, num_clients)
+
 
 @pytest.mark.parametrize("num_clients", [
     5,
@@ -103,9 +106,7 @@ def test_messaging_high_latency(xmpp_server, client_factory, debug, num_clients)
     logging.info("Proxy listening on port {} with latency {} ms".format(proxy_port, latency))
 
     # Join all clients to the room via a high-latency proxy
-    clients = create_client_connections(client_factory, num_clients, proxy_port=proxy_port)
-    establish_channel(clients)
-    logging.info("All clients have been invited to the channel, sending message tests")
+    connect_and_send_messages(client_factory, debug, num_clients, proxy_port)
 
     proxy.stop()
 
