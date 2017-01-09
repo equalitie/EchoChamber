@@ -20,7 +20,7 @@ def connect_and_send_messages(client_factory, debug, num_clients, server_port = 
     percentage_high_users = 0.1
 
     # Join all clients to the room
-    clients = create_client_connections(client_factory, num_clients, server_port)
+    clients = create_client_connections(client_factory, num_clients, proxy_port=server_port)
     establish_channel(clients)
     logging.info("All clients have been invited to the channel, sending message tests")
 
@@ -106,7 +106,7 @@ def test_messaging_high_latency(xmpp_server, client_factory, debug, num_clients)
     logging.info("Proxy listening on port {} with latency {} ms".format(proxy_port, latency))
 
     # Join all clients to the room via a high-latency proxy
-    connect_and_send_messages(client_factory, debug, num_clients, proxy_port)
+    connect_and_send_messages(client_factory, debug, num_clients, server_port=proxy_port)
 
     proxy.stop()
 
