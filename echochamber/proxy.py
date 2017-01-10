@@ -9,7 +9,7 @@ import select
 buffer_size = 4096
 
 logging.basicConfig(level=logging.INFO)
-# logging.basicConfig(level=logging.DEBUG)
+
 
 class ProxyInterface(object):
     """
@@ -18,7 +18,7 @@ class ProxyInterface(object):
     def process_data(self, source, dest):
         """Infinite loop and proxy data between source and destination socket"""
         queue = []
-        latency = self.server.latency
+        latency = self.server.latency  # pylint: disable=no-member
 
         while True:
             # Write any data which has been queued and is now ready to send
@@ -29,7 +29,7 @@ class ProxyInterface(object):
 
             now = time.time()
 
-            timeout = None # None means to wait indefinitely
+            timeout = None  # None means to wait indefinitely
 
             if queue and queue[0][0] > now:
                 timeout = queue[0][0] - now
@@ -44,7 +44,7 @@ class ProxyInterface(object):
 
             except Exception:
                 # Close connections when an exception occurs
-                logging.exception("Connection closed")
+                logging.info("Connection closed")
                 source.close()
                 break
 
@@ -69,11 +69,11 @@ class ProxyInterface(object):
     def write(self, data):
         """Request refers to external side of the connection"""
         logging.debug("Sending data: %d", len(data))
-        self.request.send(data)
+        self.request.send(data)  # pylint: disable=no-member
 
     def stop_forwarding(self):
         logging.debug("Stop forwarding %s", self)
-        self.request.close()
+        self.request.close()  # pylint: disable=no-member
 
 
 class Forwarder(threading.Thread, ProxyInterface):

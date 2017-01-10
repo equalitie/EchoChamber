@@ -12,7 +12,8 @@ import pytest
 from echochamber.utils import create_client_connections, establish_channel, find_available_port
 from echochamber.proxy import ProxyServer
 
-def connect_and_send_messages(client_factory, debug, num_clients, server_port = None):
+
+def connect_and_send_messages(client_factory, debug, num_clients, server_port=None):
     total_time = 200  # Time period for sending all messages
     frequency_high = 0.60  # 6 messages every 10 seconds
     frequency_low = 0.10  # 1 message every 10 seconds
@@ -70,7 +71,6 @@ def connect_and_send_messages(client_factory, debug, num_clients, server_port = 
         else:
             time.sleep(send_at - elapsed)
 
-
     logging.info("Finished sending %d messages", total_messages)
 
     # Wait for all messages to be received be each jabberite client
@@ -81,6 +81,7 @@ def connect_and_send_messages(client_factory, debug, num_clients, server_port = 
         assert len(client.get_all_messages()) == total_messages
 
     logging.info("All clients received all sent messages")
+
 
 @pytest.mark.parametrize("num_clients", [
     10,
@@ -109,4 +110,3 @@ def test_messaging_high_latency(xmpp_server, client_factory, debug, num_clients)
     connect_and_send_messages(client_factory, debug, num_clients, server_port=proxy_port)
 
     proxy.stop()
-
