@@ -4,6 +4,7 @@ import logging
 import StringIO
 
 import pexpect
+import time
 
 
 class Client(object):
@@ -26,6 +27,9 @@ class Client(object):
         self.ld_library_path = config["ld_library_path"]
         self.jabberite_bin = os.path.join(self.np1sec_path, "jabberite")
 
+        self.messages = []
+        self.r_message = re.compile(r"^\*\* <(\d+)> <(\w+)> (.*)$")
+
     def set_debug(self, enable=True):
         """Enable debug log for this client"""
         if enable:
@@ -42,17 +46,31 @@ class Client(object):
         """Cleaner interface to expect on the jabberite pexpect process"""
         return self._process.expect(pattern, *args, **kwargs)
 
-    def get_output(self, timeout=0.1):
-        """
-        Return all data output from Jabberite
+    def read_line(self, timeout):
+        end = time.time() + timeout
 
-        The timeout will fire after reading the output.
-        """
-        try:
-            self.expect(pexpect.EOF, timeout=timeout)
-        except pexpect.TIMEOUT:
-            pass
-        return self._process_output.getvalue()
+        line = ""
+        while True:
+            b = self._process.read_nonblocking(1, max(0, end - time.time()))
+            if b == "\n":
+                return line
+            line += b
+
+    def read_event(self, timeout):
+        line = self.read_line(timeout)
+
+        if self.r_message.match(line):
+            self.messages.append(line)
+
+    def read_message(self, timeout):
+        end = time.time() + timeout
+
+        while True:
+            if self.messages:
+                return self.messages.pop(0)
+
+            time_remaining = max(0, end - time.time())
+            self.read_event(time_remaining)
 
     def connect(self, room, server="conference.localhost"):
         """Start the jabberite client process"""
@@ -123,15 +141,6 @@ class Client(object):
         # with the following expect().
         self.expect("{} joined the chat session".format(client.username))
         logging.info("%s joined conversation %d", client.username, self.conversation_id)
-
-    def get_all_messages(self):
-        """Parse all messages as seen by this client"""
-        message_pattern = re.compile(r"^\*\* <(\d+)> <(\w+)> (.*)[\r*]$", re.MULTILINE)
-        messages = []
-
-        for match in message_pattern.findall(self.get_output()):
-            messages.append(match[1:])
-        return messages
 
     def stop(self):
         if self._process:
