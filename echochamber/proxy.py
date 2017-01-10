@@ -19,10 +19,12 @@ class ProxyInterface(object):
 
     def get_next_timeout(self):
         """Calculate latency for the next message"""
-        mean = self.server.latency_mean         # pylint: disable=no-member
+        mean     = self.server.latency_mean     # pylint: disable=no-member
         variance = self.server.latency_variance # pylint: disable=no-member
-        assert mean
-        assert variance
+
+        mean     = mean     if mean     != None else 0
+        variance = variance if variance != None else 0
+
         return max(0, random.normalvariate(mean, variance))
 
     def process_data(self, source, dest):
