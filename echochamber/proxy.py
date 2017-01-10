@@ -27,9 +27,16 @@ class ProxyInterface(object):
                 logging.debug("Sending from queue %d", len(data))
                 dest.write(data)
 
+            now = time.time()
+
+            timeout = None # None means to wait indefinitely
+
+            if queue and queue[0][0] > now:
+                timeout = queue[0][0] - now
+
             data = None
             try:
-                input_ready, _, _ = select.select([source], [], [], 0)
+                input_ready, _, _ = select.select([source], [], [], timeout)
                 for s in input_ready:
                     data = s.recv(buffer_size)
                     if not data:
