@@ -140,7 +140,8 @@ class ProxyServer(object):
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    pass
+    daemon_threads = True
+    allow_reuse_address = True
 
 
 if __name__ == "__main__":
