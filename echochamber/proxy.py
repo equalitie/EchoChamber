@@ -5,6 +5,7 @@ import logging
 import time
 import bisect
 import select
+import random
 
 buffer_size = 4096
 
@@ -15,29 +16,30 @@ class ProxyInterface(object):
     """
     Class to abstract the proxy communications
     """
+
+    def get_next_timeout(self):
+        """Calculate latency for the next message"""
+        mean = self.server.latency_mean         # pylint: disable=no-member
+        variance = self.server.latency_variance # pylint: disable=no-member
+        assert mean
+        assert variance
+        return max(0, random.normalvariate(mean, variance))
+
     def process_data(self, source, dest):
         """Infinite loop and proxy data between source and destination socket"""
         queue = []
-        latency = self.server.latency  # pylint: disable=no-member
+
+        start = time.time()
+        next_send_time = None
+        timeout = None # None means to wait indefinitely
 
         while True:
-            # Write any data which has been queued and is now ready to send
-            while queue and queue[0][0] <= time.time():
-                queued_time, data = queue.pop(0)
-                logging.debug("Sending from queue %d", len(data))
-                dest.write(data)
-
-            now = time.time()
-
-            timeout = None  # None means to wait indefinitely
-
-            if queue and queue[0][0] > now:
-                timeout = queue[0][0] - now
-
             data = None
+
             try:
                 input_ready, _, _ = select.select([source], [], [], timeout)
                 for s in input_ready:
+                    assert data == None
                     data = s.recv(buffer_size)
                     if not data:
                         raise Exception("Connection closed")
@@ -48,19 +50,16 @@ class ProxyInterface(object):
                 source.close()
                 break
 
-            if not data:
-                continue
+            if queue:
+                d = queue.pop(0)
+                logging.debug("Sending from queue %d", len(d))
+                dest.write(d)
 
-            logging.debug("Received: %d", len(data))
+            if data:
+                logging.debug("Received: %d", len(data))
+                queue.append(data);
 
-            # Queue the received data if a latency value is set
-            if latency:
-                logging.debug("Queueing %d", len(data))
-                # logging.debug("now %f, scheduled %f", time.time(), time.time() + latency)
-                bisect.insort_right(queue, (time.time() + latency, data))
-            else:
-                # Send data immediately if no latency is specified
-                dest.write(data)
+            timeout = self.get_next_timeout() if queue else None
 
         # except Exception, e:
         #     logging.debug(e)
@@ -121,10 +120,11 @@ class ProxyServer(object):
 
     Each client connection gets spawned out to a new thread.
     """
-    def __init__(self, server_tuple, destination, latency=None):
+    def __init__(self, server_tuple, destination, latency_mean, latency_variance):
         self.server = ThreadedTCPServer(server_tuple, ThreadedTCPRequestHandler)
         self.server.destination = destination
-        self.server.latency = latency / 1000.0
+        self.server.latency_mean = latency_mean
+        self.server.latency_variance = latency_variance
 
         # Start the listening server in another thread
         server_thread = threading.Thread(target=self.server.serve_forever)

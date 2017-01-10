@@ -100,11 +100,13 @@ def test_messaging_high_latency(xmpp_server, client_factory, debug, num_clients)
     """
     Connect all clients via the latency proxy server
     """
-    latency = 200
+    latency_mean = 0.2
+    latency_variance = 0.025
     proxy_port = find_available_port()
     proxy = ProxyServer(("127.0.0.1", proxy_port), ("127.0.0.1", xmpp_server.c2s_port),
-                        latency=latency)
-    logging.info("Proxy listening on port {} with latency {} ms".format(proxy_port, latency))
+                        latency_mean, latency_variance)
+    logging.info("Proxy listening on port {} with latency mean {}s and variance {}s".
+            format(proxy_port, latency_mean, latency_variance))
 
     # Join all clients to the room via a high-latency proxy
     connect_and_send_messages(client_factory, debug, num_clients, server_port=proxy_port)
