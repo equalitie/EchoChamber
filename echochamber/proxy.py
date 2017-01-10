@@ -3,7 +3,6 @@ import SocketServer
 import threading
 import logging
 import time
-import bisect
 import select
 import random
 
@@ -19,21 +18,15 @@ class ProxyInterface(object):
 
     def get_next_timeout(self):
         """Calculate latency for the next message"""
-        mean     = self.server.latency_mean     # pylint: disable=no-member
-        variance = self.server.latency_variance # pylint: disable=no-member
-
-        mean     = mean     if mean     != None else 0
-        variance = variance if variance != None else 0
-
-        return max(0, random.normalvariate(mean, variance))
+        # pylint: disable=no-member
+        return max(0, random.normalvariate(self.server.latency_mean,
+                                           self.server.latency_variance))
 
     def process_data(self, source, dest):
         """Infinite loop and proxy data between source and destination socket"""
         queue = []
 
-        start = time.time()
-        next_send_time = None
-        timeout = None # None means to wait indefinitely
+        timeout = None  # None means to wait indefinitely
 
         while True:
             data = None
@@ -41,14 +34,14 @@ class ProxyInterface(object):
             try:
                 input_ready, _, _ = select.select([source], [], [], timeout)
                 for s in input_ready:
-                    assert data == None
+                    assert data is None
                     data = s.recv(buffer_size)
                     if not data:
                         raise Exception("Connection closed")
 
             except Exception:
                 # Close connections when an exception occurs
-                logging.info("Connection closed")
+                logging.debug("Connection closed")
                 source.close()
                 break
 
@@ -59,7 +52,7 @@ class ProxyInterface(object):
 
             if data:
                 logging.debug("Received: %d", len(data))
-                queue.append(data);
+                queue.append(data)
 
             timeout = self.get_next_timeout() if queue else None
 
@@ -122,7 +115,7 @@ class ProxyServer(object):
 
     Each client connection gets spawned out to a new thread.
     """
-    def __init__(self, server_tuple, destination, latency_mean, latency_variance):
+    def __init__(self, server_tuple, destination, latency_mean=0, latency_variance=0):
         self.server = ThreadedTCPServer(server_tuple, ThreadedTCPRequestHandler)
         self.server.destination = destination
         self.server.latency_mean = latency_mean
