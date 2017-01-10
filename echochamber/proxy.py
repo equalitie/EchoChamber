@@ -23,7 +23,7 @@ class ProxyInterface(object):
         while True:
             # Write any data which has been queued and is now ready to send
             while queue and queue[0][0] <= time.time():
-                queued_time, data = queue.pop()
+                queued_time, data = queue.pop(0)
                 logging.debug("Sending from queue %d", len(data))
                 dest.write(data)
 
