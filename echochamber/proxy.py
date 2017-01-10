@@ -44,17 +44,6 @@ class ProxyInterface(object):
             if not data:
                 continue
 
-            # print("data", data)
-
-            # try:
-            #     # Read any new data available on the socket
-            #     read
-            #     if select.se
-            #     data = source.recv(buffer_size)
-            # except socket.error as e:
-            #     logging.exception("exception reading data")
-            #     continue
-
             logging.debug("Received: %d", len(data))
 
             # Queue the received data if a latency value is set
