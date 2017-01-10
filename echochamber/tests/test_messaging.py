@@ -85,6 +85,7 @@ def connect_and_send_messages(client_factory, debug, num_clients, server_port=No
 
 @pytest.mark.parametrize("num_clients", [
     10,
+    pytest.mark.skipif("os.environ.get('CI', None)")(25),
 ])
 def test_messaging(client_factory, debug, num_clients):
     """
@@ -94,7 +95,8 @@ def test_messaging(client_factory, debug, num_clients):
 
 
 @pytest.mark.parametrize("num_clients", [
-    5,
+    10,
+    pytest.mark.skipif("os.environ.get('CI', None)")(25),
 ])
 def test_messaging_high_latency(xmpp_server, client_factory, debug, num_clients):
     """

@@ -69,7 +69,7 @@ class Client(object):
             # Start pexpect controlled jabberite client
             self._process = pexpect.spawn(
                 self.jabberite_bin, command,
-                env=self.env, echo=False, timeout=180,
+                env=self.env, echo=False, timeout=3600,
             )
 
             self._process.logfile = None

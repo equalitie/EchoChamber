@@ -29,7 +29,7 @@ def invite_debug_user_to_conversation(leader, debug_user):
 @pytest.mark.parametrize("num_clients", [
     2,
     5,
-    10,
+    pytest.mark.skipif("os.environ.get('CI', None)")(50),
 ])
 def test_client_connection(client_factory, debug, num_clients):
     """
