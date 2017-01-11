@@ -17,6 +17,8 @@ def pytest_addoption(parser):
     parser.addoption("--debug-mode", action="store_true",
                      help="Enable debug features such as interactive prompts and "
                      "invitation of external jabberite clients.")
+    parser.addoption("--run-with-gdb", action="store_true",
+                     help="Run jabberite instances with GDB.")
     parser.addoption("-C", "--echochamber-config", type=str, default="config.yml",
                      help="Location of the EchoChamber config file.")
 
