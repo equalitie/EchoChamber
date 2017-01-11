@@ -73,12 +73,19 @@ def connect_and_send_messages(client_factory, debug, num_clients, server_port=No
 
     logging.info("Finished sending %d messages", total_messages)
 
-    # Wait for all messages to be received be each jabberite client
-    time.sleep(5)
-
+    # Wait for all messages to arrive
+    read_start = time.time()
     for client in clients:
-        # Check that each client received all the messages
-        assert len(client.get_all_messages()) == total_messages
+        received = 0
+        try:
+            for i in range(0, total_messages):
+                read_start = time.time()
+                client.read_message(60)
+                received += 1
+        except Exception as e:
+            logging.exception("Problem reading messages: %s %d seconds (received %d out of %d)",
+                              str(e), int(time.time() - read_start), received, total_messages)
+            assert False
 
     logging.info("All clients received all sent messages")
 
