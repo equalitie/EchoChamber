@@ -14,14 +14,14 @@ produce programmer-friendly benchmark data.
 ## Features
 
 1. The ability to spin up an arbitrary number of clients
-2. Fascilitate communication between peers in a natural way
+2. Facilitate communication between peers in a natural way
 3. Provide a simple configuration language or API
 4. Simulate an internal network as well as management of peers
 5. Produce programmer-friendly logs/reports about tests
 
 ## Dependencies
 
-EchoChamber is designed to run on Unix-like systems and is developed on Debian (https://debian.org).  The Prosody XMPP server (https://prosody.im), the np1sec library, and Python PIP (https://pip.pypa.io/) are required on the testing system.  Prosody and Python PIP  may be installed via the operating system's package manager (apt, yum), while np1sec must be installed from source.  Please refer to the README in the np1sec Github project (https://github.org/equalitie/np1sec) for installation instructions.
+EchoChamber is designed to run on Unix-like systems and is developed on Debian (https://debian.org). The Prosody XMPP server (https://prosody.im), the np1sec library, and Python PIP (https://pip.pypa.io/) are required on the testing system.  Prosody and Python PIP  may be installed via the operating system's package manager (apt, yum), while np1sec must be installed from source.  Please refer to the README in the np1sec Github project (https://github.org/equalitie/np1sec) for installation instructions.
 
 ## Setup
 
