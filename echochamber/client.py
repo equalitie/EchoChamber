@@ -3,6 +3,7 @@ import re
 import logging
 import StringIO
 
+import pytest
 import pexpect
 import time
 
@@ -74,19 +75,26 @@ class Client(object):
 
     def connect(self, room, server="conference.localhost"):
         """Start the jabberite client process"""
-        command = ["--account", self.xmpp_user,
-                   "--password", self.xmpp_password,
-                   "--server", server,
-                   "--port", self.port,
-                   "--room", room,
-                   ]
+        cmd_args = ["--account", self.xmpp_user,
+                    "--password", self.xmpp_password,
+                    "--server", server,
+                    "--port", self.port,
+                    "--room", room,
+                    ]
         self.env = {"LD_LIBRARY_PATH": "{}:{}".format(os.path.join(self.np1sec_path),
                                                       self.ld_library_path)}
+
+        # Run Jabberite with GDB if the flag is set
+        if pytest.config.getoption("--run-with-gdb"):  # pylint: disable=no-member
+            command = "gdb"
+            cmd_args = ["-ex", "run", "--args", self.jabberite_bin] + cmd_args
+        else:
+            command = self.jabberite_bin
 
         if not self._process:
             # Start pexpect controlled jabberite client
             self._process = pexpect.spawn(
-                self.jabberite_bin, command,
+                command, cmd_args,
                 env=self.env, echo=False, timeout=3600,
             )
 
@@ -98,7 +106,7 @@ class Client(object):
 
             # Wait for the client to finish connecting
             self.expect(r"\*\* Connected")
-            logging.debug("Started client: %s", " ".join(command))
+            logging.debug("Started client: %s", " ".join(cmd_args))
 
     def create_conversation(self):
         """Create np1sec conversation and return the new conversation ID"""
