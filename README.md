@@ -5,9 +5,17 @@ EchoChamber Tests
 
 EchoChamber is test harness and set of integration tests for the np1sec library.
 
+# Setup
+
+Clone this git repository to your machine. Rename `config.yml.example` to `config.yml` and edit the file as appropriate.
+
+To run EchoChamber, you need to install dependencies first, by launching:
+
+      pip install -r requirements.txt
+
 # Running
 
-EchoChamber uses the `pytest`` framework for collecting and running EchoChamber tests. The EchoChamber specific pytest options are listed in the pytest help message.
+EchoChamber uses the `pytest` framework for collecting and running EchoChamber tests. The EchoChamber specific pytest options are listed in the pytest help message.
 
 
       --show-cli-output     show output from all subprocesses (v. noisy)
