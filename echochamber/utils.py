@@ -1,4 +1,3 @@
-import time
 import logging
 import socket
 
@@ -23,7 +22,6 @@ def create_client_connections(client_factory, num_clients, room_name="test", pro
         client.connect("messaging-test")  # Connect to the XMPP room
         clients.append(client)
 
-    time.sleep(1)  # Wait for all users to finish joining the room
     return clients
 
 
