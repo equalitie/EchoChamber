@@ -6,7 +6,6 @@ import time
 import bisect
 import logging
 import random
-import Queue
 from threading import Thread
 
 import pytest
@@ -16,53 +15,59 @@ from echochamber.proxy import ProxyServer
 
 
 def read_messages(clients, counters, timeout):
-    def run(client, queue):
+    def run(client):
         now = time.time()
-        start = now
-        read = 0
-        while (start + timeout) > now:
+        end = now + timeout
+        while now < end:
             try:
-                client.read_message(timeout)
-                read += 1
+                client.read_message(end - now)
+                counters[client.username] += 1
                 now = time.time()
             except Exception:
                 break
 
-        queue.put(read)
-
     threads = []
 
     for client in clients:
-        username = client.username
-        q = Queue.Queue()
-        t = Thread(target=run, args=(client, q))
-        t.start()
-        threads.append((t, q, username))
-
-    for t, q, username in threads:
-        t.join()
-        counters[username] += q.get()
-
-
-def read_rest_of_messages(clients, counters, total):
-    def run(client, so_far):
-        while so_far < total:
-            try:
-                client.read_message(60)
-                so_far += 1
-            except Exception:
-                logging.info("e >>> %s %d %d", client.username, so_far, total)
-                assert False
-
-    threads = []
-
-    for client in clients:
-        t = Thread(target=run, args=(client, counters[client.username]))
+        t = Thread(target=run, args=(client,))
         t.start()
         threads.append(t)
 
     for t in threads:
         t.join()
+
+
+def read_rest_of_messages(clients, counters, total):
+    def run(client):
+        while counters[client.username] < total:
+            try:
+                client.read_message(5*60)
+                counters[client.username] += 1
+            except Exception:
+                break
+
+    threads = []
+
+    for client in clients:
+        username = client.username
+        t = Thread(target=run, args=(client,))
+        t.start()
+        threads.append((t, username))
+
+    success = True
+
+    for t, username in threads:
+        logging.info("Joining %s", username)
+        t.join()
+
+        messages_read = counters[username]
+
+        if messages_read != total:
+            success = False
+            logging.info("Client %s read only %d out of %d messages",
+                         username, messages_read, total)
+
+    assert success
 
 
 def connect_and_send_messages(client_factory, debug, num_clients, server_port=None):
@@ -129,23 +134,24 @@ def connect_and_send_messages(client_factory, debug, num_clients, server_port=No
             )
             ids[client.username] += 1
         else:
-            # For some reason if we only start to read the messages once we sent them all the
-            # pexpect library won't read them all back. But if we read _some_ of them while we're
-            # waiting until the time the next message is to be sent, then we greatly increase the
-            # chances pexpect will read them all. Unfotunately, it's still not bullet proof and
-            # then big tests with 25 or more nodes still fail because few messages are not
-            # received. I (github/inetic) have checked the logs from each client and the
-            # messages are actually received fine by jabberite but are lost somewhere
-            # in the pexpect library before they are read.
+            # Interestingly, using `time.sleep(send_at - elapsed)` here
+            # instead of read_messages will make the 10 node test pass
+            # on our Xeon test server while when read_messages is used
+            # the test fails. But when it fails and the log of each client
+            # is inspected it can be seen that all messages are actually
+            # received by jabberites. On the other hand, the 25 node test
+            # fail in both cases (when time.sleep and read_messages is
+            # used) but when read_messages is used, it can again be shown
+            # from the logs that all messages are actually received by
+            # jabberites but are lost somewhere in the pexpect library.
             read_messages(clients, recv_count, send_at - elapsed)
-            # If you want to try not to read messages here, just replace the above line with
             # time.sleep(send_at - elapsed)
 
     logging.info("Finished sending %d messages", total_messages)
 
     # Wait for all messages to arrive
-    # NOTE: Reading from all clients at once also seems to increase chances
-    #       of receiving all the messages from pexpect for some reason.
+    # NOTE: Reading from all clients at once seems to increase chances
+    #       of receiving all the messages from pexpect.
     read_rest_of_messages(clients, recv_count, total_messages)
 
     logging.info("All clients received all sent messages")
