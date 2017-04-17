@@ -39,7 +39,15 @@ On a Debian-based system the Prosody XMPP server and test dependencies can be in
       sudo service prosody stop # Stop the default prosody server
       pip install -r requirements.txt
 
-## Running
+# Setup
+
+Clone this git repository to your machine. Rename `config.yml.example` to `config.yml` and edit the file as appropriate.
+
+To run EchoChamber, you need to install dependencies first, by launching:
+
+      pip install -r requirements.txt
+
+# Running
 
 EchoChamber uses the `pytest` framework for collecting and running EchoChamber tests. The EchoChamber specific pytest options are listed in the pytest help message (`py.test --help`).
 

@@ -6,11 +6,68 @@ import time
 import bisect
 import logging
 import random
+from threading import Thread
 
 import pytest
 
 from echochamber.utils import create_client_connections, establish_channel, find_available_port
 from echochamber.proxy import ProxyServer
+
+
+def read_messages(clients, counters, timeout):
+    def run(client):
+        now = time.time()
+        end = now + timeout
+        while now < end:
+            try:
+                client.read_message(end - now)
+                counters[client.username] += 1
+                now = time.time()
+            except Exception:
+                break
+
+    threads = []
+
+    for client in clients:
+        t = Thread(target=run, args=(client,))
+        t.start()
+        threads.append(t)
+
+    for t in threads:
+        t.join()
+
+
+def read_rest_of_messages(clients, counters, total):
+    def run(client):
+        while counters[client.username] < total:
+            try:
+                client.read_message(5*60)
+                counters[client.username] += 1
+            except Exception:
+                break
+
+    threads = []
+
+    for client in clients:
+        username = client.username
+        t = Thread(target=run, args=(client,))
+        t.start()
+        threads.append((t, username))
+
+    success = True
+
+    for t, username in threads:
+        logging.info("Joining %s", username)
+        t.join()
+
+        messages_read = counters[username]
+
+        if messages_read != total:
+            success = False
+            logging.info("Client %s read only %d out of %d messages",
+                         username, messages_read, total)
+
+    assert success
 
 
 def connect_and_send_messages(client_factory, debug, num_clients, server_port=None):
@@ -52,6 +109,12 @@ def connect_and_send_messages(client_factory, debug, num_clients, server_port=No
     message_id = 0
     total_messages = len(message_queue)
 
+    ids = {}
+    recv_count = {}
+    for client in clients:
+        ids[client.username] = 0
+        recv_count[client.username] = 0
+
     while message_queue:
         # Check if first message is ready to be sent (we have reached the scheduled send time)
         elapsed = time.time() - start_time
@@ -63,29 +126,33 @@ def connect_and_send_messages(client_factory, debug, num_clients, server_port=No
             logging.info("Sending message %d for %s queued at %0.2f",
                          message_id, client.username, queued_time)
 
-            client.send_message("{message_id} {time:0.2f} {username}".format(
+            client.send_message("{message_id} {time:0.2f} {username} {mid}".format(
                 message_id=message_id,
                 time=queued_time,
-                username=client.username)
+                username=client.username,
+                mid=ids[client.username])
             )
+            ids[client.username] += 1
         else:
-            time.sleep(send_at - elapsed)
+            # Interestingly, using `time.sleep(send_at - elapsed)` here
+            # instead of read_messages will make the 10 node test pass
+            # on our Xeon test server while when read_messages is used
+            # the test fails. But when it fails and the log of each client
+            # is inspected it can be seen that all messages are actually
+            # received by jabberites. On the other hand, the 25 node test
+            # fail in both cases (when time.sleep and read_messages is
+            # used) but when read_messages is used, it can again be shown
+            # from the logs that all messages are actually received by
+            # jabberites but are lost somewhere in the pexpect library.
+            read_messages(clients, recv_count, send_at - elapsed)
+            # time.sleep(send_at - elapsed)
 
     logging.info("Finished sending %d messages", total_messages)
 
     # Wait for all messages to arrive
-    read_start = time.time()
-    for client in clients:
-        received = 0
-        try:
-            for i in range(0, total_messages):
-                read_start = time.time()
-                client.read_message(60)
-                received += 1
-        except Exception as e:
-            logging.exception("Problem reading messages: %s %d seconds (received %d out of %d)",
-                              str(e), int(time.time() - read_start), received, total_messages)
-            assert False
+    # NOTE: Reading from all clients at once seems to increase chances
+    #       of receiving all the messages from pexpect.
+    read_rest_of_messages(clients, recv_count, total_messages)
 
     logging.info("All clients received all sent messages")
 
